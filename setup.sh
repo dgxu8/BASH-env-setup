@@ -40,7 +40,8 @@ cd $dir
 
 ### install vim-plug
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim mkdir ~/.vim/plugged
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim 
+mkdir ~/.vim/plugged
 
 ### install tmux if not installed
 if command -v tmux &> /dev/null; then
