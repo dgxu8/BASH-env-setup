@@ -78,5 +78,6 @@ set laststatus=2
 set background=dark
 colorscheme snow
 
-set term=screen-256color
-set t_ut=
+" The following settings might need to be enabled for wsl terminals
+"set term=screen-256color
+"set t_ut=
