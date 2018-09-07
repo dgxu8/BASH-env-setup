@@ -40,7 +40,12 @@ To fold use `za` to fold a selected area.
 3. `Esc` to apply
 
 ## Copy & Paste
+1. enter mouse mode with <F2>
+2. select copy area
+3. `y` to copy
+4. `p` to paste or <c-shift-v>
 
+or
 1. `v`, `V`, or `Ctrl-v` for selection. v:char, V:line, Crtl-v:Block
 2. `y` to copy. `d` to cut.
 3. `p` to paste after cursor. `P` to paste before cursor
