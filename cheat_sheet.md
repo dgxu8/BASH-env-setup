@@ -24,6 +24,17 @@
 `n` for next found
 `space` to remove highlighting
 
+## Auto indent
+`gg` - go to begining of file
+`=` - indent
+`G` - to the bottom of the page
+
+## Delete Line
+in normal mode
+`d`-> `t` -> char - deletes from cursor to char
+`c` -> `t` -> char - same as above but puts into insert mode
+`d` -> direction - deletes in the direction
+
 ## Folding
 To fold use `za` to fold a selected area.
 
