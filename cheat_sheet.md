@@ -35,6 +35,10 @@ in normal mode
 `c` -> `t` -> char - same as above but puts into insert mode
 `d` -> direction - deletes in the direction
 
+## spliting window
+`-` - split horizontal
+`|` - split vertical
+
 ## Folding
 To fold use `za` to fold a selected area.
 

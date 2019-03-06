@@ -53,6 +53,12 @@ map! <F3> <C-O>:set mouse-=a<CR>
 " map for fzf
 map ; :Files<CR>
 
+" map horizontal split to -
+map - :split<CR>
+
+" map vertical split to |
+map <bar> :vsplit<CR>
+
 " map for file tree
 map <C-o> :NERDTreeToggle<CR>
 
