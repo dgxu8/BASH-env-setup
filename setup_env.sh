@@ -1,18 +1,20 @@
 #!/bin/bash
 
+setup_dir=`pwd`/setup_files
+
 echo "Setting up bashrc"
-cp "setup_files/bashrc" ~/.bashrc
+ln -sf $setup_dir/bashrc ~/.bashrc
 
 echo "Setting up vim configs"
 git clone https://github.com/zboothdev/vim-config.git ~/.vim
 echo "so ~/.vim/vimrc.vim" > ".vimrc"
-cp "setup_files/vimrc.vim" ~/.vim/
-cp "setup_files/plugins-setup.vim" ~/.vim/
-cp "setup_files/plugins.vim" ~/.vim/
+ln -sf $setup_dir/vimrc.vim ~/.vim/vimrc.vim
+ln -sf $setup_dir/plugins-setup.vim ~/.vim/plugins-setup.vim
+ln -sf $setup_dir/plugins.vim ~/.vim/plugins.vim
 
 echo "Setting up nvim"
 mkdir -p ~/.config/nvim
-cp "setup_files/init.vim" ~/.config/nvim/
+ln -sf $setup_dir/init.vim ~/.config/nvim/init.vim
 
 echo "Setting up tmux"
-cp "setup_files/tmux.conf" ~/.tmux.conf
+ln -sf $setup_dir/tmux.conf ~/.tmux.conf

@@ -8,6 +8,9 @@ sudo apt upgrade
 # apt installs
 sudo apt install ripgrep
 sudo apt install fd-find
+# Symlinke fdfind to fd
+sudo ln -s /usr/bin/fdfind /usr/bin/fd
+
 sudo apt install python3-pip
 sudo apt install exuberant-ctags
 sudo apt install git-gui
