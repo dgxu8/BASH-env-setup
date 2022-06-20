@@ -4,6 +4,8 @@ alias wcmd="cmd.exe /C"
 alias wusb="cmd.exe /C usbipd wsl"
 alias wusb-list="cmd.exe /C usbipd wsl list"
 alias wusb-attach="cmd.exe /C usbipd wsl attach"
+alias wsl-update="cmd.exe /C wsl --update"
+alias explore="explorer.exe ."
 
 export LIBGL_ALWAYS_INDIRECT=1
 export DISPLAY=localhost:0.0
