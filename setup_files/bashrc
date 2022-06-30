@@ -147,9 +147,9 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-# Source wsl specific rc file if available
-if [ -f ~/.wslrc ]; then
-  . ~/.wslrc
+# Source local bash rc file if available
+if [ -f ~/.localrc ]; then
+  . ~/.localrc
 fi
 
 # enable programmable completion features (you don't need to enable
@@ -176,7 +176,6 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # alii
 alias bim="nvim"
 alias cim="nvim"
-alias mkdur="sudo mkdir"
 alias delet="find . -name '*.orig' -delete -print"
 
 reboot () { echo 'Reboot? (y/n)' && read x && [[ "$x" == "y" ]] && /sbin/reboot; }

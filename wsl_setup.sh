@@ -6,7 +6,7 @@ sudo apt install ubuntu-desktop
 sudo apt install yad
 sudo apt install gedit
 
-ln -sf $setup_dir/wslrc ~/.wslrc
+ln -sf $setup_dir/wslrc ~/.localrc
 
 source ~/.bashrc
 
