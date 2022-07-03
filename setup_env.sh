@@ -18,3 +18,7 @@ ln -sf $setup_dir/init.vim ~/.config/nvim/init.vim
 
 echo "Setting up tmux"
 ln -sf $setup_dir/tmux.conf ~/.tmux.conf
+
+# Note: We want to install it manually so we can rebind the save to prompt first
+echo "Installing tmux resurrect"
+git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux/tmux-resurrect
