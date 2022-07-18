@@ -11,15 +11,6 @@ cnoreabbrev ag Ack
 cnoreabbrev aG Ack
 cnoreabbrev Ag Ack
 cnoreabbrev AG Ack
-" }}}
-
-" {{{ vim-airline
-" 'vim-airline/vim-airline'
-set laststatus=2
-let g:airline#extensions#tabline#enabled = 1 " Show buffer list in airline
-let g:airline_powerline_fonts = 1 " Use Powerline fonts
-let g:airline_theme='dark'
-" }}}
 
 " {{{ vim-esearch
 " NeoVim/Vim plugin performing project-wide async search and replace, similar to SublimeText, Atom et al.
@@ -39,3 +30,8 @@ let g:esearch#util#trunc_omission = "|"
 " }}}
 
 " vim: set foldmethod=marker:
+
+" minimap
+let g:minimap_auto_start = 1
+let g:minimap_auto_start_win_enter = 1
+let g:minimap_width = 8

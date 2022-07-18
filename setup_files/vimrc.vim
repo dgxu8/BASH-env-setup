@@ -109,6 +109,9 @@ map <leader>cp :let @+ = expand("%:p")<CR>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Dennis Custom stuff
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Get path
+command GetPath :let @+ = expand("%:p") | echom @+
+
 " folding settings
 set foldenable
 set foldlevelstart=10
