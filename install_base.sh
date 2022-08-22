@@ -14,6 +14,12 @@ sudo ln -s /usr/bin/fdfind /usr/bin/fd
 sudo apt install python3-pip
 sudo apt install exuberant-ctags
 sudo apt install git-gui
+sudo apt install clang
+sudo apt install libclang-10-dev
+sudo apt install python3-pip
+
+echo "Installing pip stuff"
+pip3 isntall pyright
 
 echo "Installing RUST"
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -67,3 +73,21 @@ echo "so ~/.vim/vimrc.vim" > ".vimrc"
 echo "Setting up nvim"
 mkdir -p ~/.config/nvim
 cp init.vim ~/.config/nvim/
+
+echo "Installing ccls"
+git clone --depth=1 --recursive https://github.com/MaskRay/ccls
+cd ccls
+
+# Download "Pre-Built Binaries" from https://releases.llvm.org/download.html
+# and unpack to /path/to/clang+llvm-xxx.
+# Do not unpack to a temporary directory, as the clang resource directory is hard-coded
+# into ccls at compile time!
+# See https://github.com/MaskRay/ccls/wiki/FAQ#verify-the-clang-resource-directory-is-correct
+cmake -H. -BRelease -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_PREFIX_PATH=/usr/lib/llvm-10 \
+    -DLLVM_INCLUDE_DIR=/usr/lib/llvm-10/include \
+    -DLLVM_BUILD_INCLUDE_DIR=/usr/include/llvm-10/
+cmake --build Release
+cd Release
+sudo make install
+cd ../..

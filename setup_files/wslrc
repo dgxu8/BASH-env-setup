@@ -7,5 +7,7 @@ alias wusb-attach="cmd.exe /C usbipd wsl attach"
 alias wsl-update="cmd.exe /C wsl --update"
 alias explore="explorer.exe ."
 
+export PATH=~/.local/bin:"$PATH"
+
 export LIBGL_ALWAYS_INDIRECT=1
 export DISPLAY=localhost:0.0

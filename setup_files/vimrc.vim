@@ -117,6 +117,7 @@ set foldenable
 set foldlevelstart=10
 set foldnestmax=10
 set foldmethod=syntax
+set ff=unix
 
 let g:airline#extensions#tagbar#flags = 'f'  " show full tag hierarchy
 
@@ -206,6 +207,9 @@ map 0 ^
 " Ubuntu is weird and alt+j/k gives a weird keycombinaion so we need to rebind it
 map <Esc>j <A-j>
 map <Esc>k <A-k>
+
+nnoremap <A-a> <C-a>
+nnoremap <A-x> <C-x>
 
 " Move a line of text using ALT+[jk] or Comamnd+[jk] on mac
 nnoremap <A-j> :m .+1<CR>==

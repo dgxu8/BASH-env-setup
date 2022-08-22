@@ -177,6 +177,7 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 alias bim="nvim"
 alias cim="nvim"
 alias delet="find . -name '*.orig' -delete -print"
+alias copy="rsync -a --info=progress2"
 
 reboot () { echo 'Reboot? (y/n)' && read x && [[ "$x" == "y" ]] && /sbin/reboot; }
 
