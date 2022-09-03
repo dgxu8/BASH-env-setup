@@ -16,15 +16,15 @@ sudo apt install exuberant-ctags
 sudo apt install git-gui
 sudo apt install clang
 sudo apt install libclang-10-dev
-sudo apt install python3-pip
+sudo apt install cmake
 
 echo "Installing pip stuff"
-pip3 isntall pyright
+sudo apt install python3-pip
+pip3 install pyright
 
 echo "Installing RUST"
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-#mkdir ~/.cargo
-#cp cargo_env ~/.cargo/env
+sudo apt install cargo
 
 echo "Installing cargo things"
 cargo install --locked code-minimap
@@ -65,14 +65,6 @@ git clone --depth 1 https://github.com/wbthomason/packer.nvim\
 
 echo "Installing tpm"
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-
-echo "Setting up vim configs"
-git clone https://github.com/zboothdev/vim-config.git ~/.vim
-echo "so ~/.vim/vimrc.vim" > ".vimrc"
-
-echo "Setting up nvim"
-mkdir -p ~/.config/nvim
-cp init.vim ~/.config/nvim/
 
 echo "Installing ccls"
 git clone --depth=1 --recursive https://github.com/MaskRay/ccls
