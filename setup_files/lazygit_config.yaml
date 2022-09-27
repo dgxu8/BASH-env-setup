@@ -1,0 +1,10 @@
+os:
+  editCommand: 'vim'
+  openCommand: ''
+
+customCommands:
+  - key: 'E'
+    description: 'Add empty commit'
+    context: 'commits'
+    command: 'git commit --allow-empty -m "empty"'
+    loadingText: 'Committing empty commit...'

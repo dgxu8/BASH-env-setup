@@ -16,6 +16,9 @@ echo "Setting up nvim"
 mkdir -p ~/.config/nvim
 ln -sf $setup_dir/init.vim ~/.config/nvim/init.vim
 
+echo "Setting up lazygit"
+ln -sf $setup_dir/lazygit_config.yml ~/.config/lazygit/config.yml
+
 echo "Setting up tmux"
 ln -sf $setup_dir/tmux.conf ~/.tmux.conf
 
