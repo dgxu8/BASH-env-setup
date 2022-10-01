@@ -106,12 +106,10 @@ let g:gutentags_ctags_exclude = [
 \]
 " }}}
 
-" {{{ vim-minimap
-" minimap sidebar
-"Plug 'severin-lemaignan/vim-minimap'
+" {{{ scrollbar
+" scrollbar
+Plug 'petertriho/nvim-scrollbar'
 " }}}
-Plug 'wfxr/minimap.vim'
-
 
 " {{{ tagbar
 " tagbar

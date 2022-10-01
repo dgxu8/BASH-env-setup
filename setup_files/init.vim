@@ -10,6 +10,12 @@ nmap <leader>~ :source ~/.config/nvim/init.vim<CR>:redraw!<CR>:echo "~/.config/n
 lua << EOF
 
 ----------------
+-- Setup scrollbar
+----------------
+require("scrollbar").setup()
+
+
+----------------
 -- Setup Lualine
 ----------------
 require('lualine').setup {
@@ -37,7 +43,12 @@ require('lualine').setup {
     lualine_z = {'location'}
   },
   tabline = {
-    lualine_a = {'buffers'},
+    lualine_a = {
+      {
+        'buffers',
+        show_filename_only = false,
+      }
+    },
     lualine_b = {},
     lualine_c = {},
     lualine_x = {},
@@ -140,15 +151,6 @@ lspconfig.pyright.setup {
   flags = {
       debounce_text_changes = 200,
       allow_incremental_sync = false
-  },
-  settings = {
-    python = {
-      analysis = {
-        autoSearchPaths = false,
-        useLibraryCodeForTypes = false,
-        diagnosticMode = 'openFilesOnly',
-      }
-    }
   }
 }
 

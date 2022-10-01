@@ -1,6 +1,10 @@
 os:
   editCommand: 'vim'
-  openCommand: ''
+
+keybinding:
+  commits:
+    moveDownCommit: 'J'
+    moveUpCommit: 'K'
 
 customCommands:
   - key: 'E'
