@@ -72,7 +72,6 @@ filetype plugin indent on
 syntax on
 set t_Co=256
 set background=dark
-"colorscheme luna
 colorscheme solarized
 set termguicolors
 
@@ -118,8 +117,6 @@ set foldlevelstart=10
 set foldnestmax=10
 set foldmethod=syntax
 set ff=unix
-
-let g:airline#extensions#tagbar#flags = 'f'  " show full tag hierarchy
 
 set splitbelow
 set splitright

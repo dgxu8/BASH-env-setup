@@ -172,13 +172,20 @@ stty -ixon
 export PATH=/home/xudennis/nvim-linux64/bin/:$PATH:/home/xudennis/bin/
 export FZF_DEFAULT_COMMAND='fd --type f'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export VISUAL=vim
+export EDITOR="$VISUAL"
 
 # alii
 alias lg="lazygit"
 alias bim="nvim"
 alias cim="nvim"
 alias delet="find . -name '*.orig' -delete -print"
-alias copy="rsync -a --info=progress2"
+alias copy="rsync -a --no-i-r --info=progress2"
+alias subdate="git submodule update --init --recursive"
+
+# This is to fix an issue with opening vim on a ssh session inside of tmux (tmux->ssh->vim).
+# This is because tmux sets TERM to tmux-256color which can break vim whil ssh'd in.
+alias ssh="TERM=xterm-256color \ssh"
 
 reboot () { echo 'Reboot? (y/n)' && read x && [[ "$x" == "y" ]] && /sbin/reboot; }
 
@@ -190,3 +197,4 @@ function set-title() {
   PS1=${ORIG}${TITLE}
 }
 . "$HOME/.cargo/env"
+export PATH=~/.local/bin:"$PATH"

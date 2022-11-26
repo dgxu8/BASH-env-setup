@@ -12,3 +12,9 @@ customCommands:
     context: 'commits'
     command: 'git commit --allow-empty -m "empty"'
     loadingText: 'Committing empty commit...'
+
+  - key: 'P'
+    description: 'Push to gerrit'
+    command: 'git pushgerrit {{.SelectedLocalCommit.Sha}}'
+    context: 'commits'
+    loadingText: 'Pushing'

@@ -35,7 +35,7 @@ Plug 'airblade/vim-gitgutter'
 
 "{{{ taglist
 " Uses exuberant ctags.
-Plug 'vim-scripts/taglist.vim'
+"Plug 'vim-scripts/taglist.vim'
 " }}}
 
 " {{{ nerdtree
@@ -99,11 +99,11 @@ let g:ale_python_flake8_options = '--max-line-length=88'
 
 " {{{ vim-gutentags
 " A Vim plugin that manages your tag files
-Plug 'ludovicchabant/vim-gutentags'
-let g:gutentags_ctags_exclude = [
-    \ 'build/*',
-    \ '**.ccls-cache/*'
-\]
+"Plug 'ludovicchabant/vim-gutentags'
+"let g:gutentags_ctags_exclude = [
+"    \ 'build/*',
+"    \ '**.ccls-cache/*'
+"\]
 " }}}
 
 " {{{ scrollbar

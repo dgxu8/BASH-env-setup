@@ -22,12 +22,18 @@ echo "Installing pip stuff"
 sudo apt install python3-pip
 pip3 install pyright
 
+echo "install yarn"
+sudo npm install --global yarn
+
 echo "Installing RUST"
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 sudo apt install cargo
 
 echo "Installing cargo things"
 cargo install --locked code-minimap
+
+echo "Install tldr (better man)"
+sudo npm install -g tldr
 
 echo "Installing rando packages"
 mkdir -p ~/Downloads/setup
@@ -44,6 +50,10 @@ curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.
 sudo apt install ./nvim-linux64.deb
 nvim --version
 sudo apt install python3-neovim
+
+echo "install tree-sitter"
+sudo npm install -g tree-sitter
+yarn global add tree-sitter-cli
 
 echo "Installing tmux"
 echo "Download from latest release at:"
