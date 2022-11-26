@@ -66,6 +66,7 @@ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 ~/.fzf/install
 
 echo "Installing packer.nvim"
+echo "You will beed to do a :PackerCompile in nvim to install things"
 git clone --depth 1 https://github.com/wbthomason/packer.nvim\
  ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 

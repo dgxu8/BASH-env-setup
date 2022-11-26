@@ -15,6 +15,7 @@ ln -sf $setup_dir/plugins.vim ~/.vim/plugins.vim
 echo "Setting up nvim"
 mkdir -p ~/.config/nvim
 ln -sf $setup_dir/init.vim ~/.config/nvim/init.vim
+ln -sf $setup_dir/plugins.lua ~/.config/nvim/lua/plugins.lua
 
 echo "Setting up lazygit"
 ln -sf $setup_dir/lazygit_config.yml ~/.config/lazygit/config.yml

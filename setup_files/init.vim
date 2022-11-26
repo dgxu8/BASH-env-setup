@@ -7,6 +7,14 @@ tnoremap <Esc> <C-\><C-n>
 tnoremap <F9> :q<CR>
 nmap <leader>~ :source ~/.config/nvim/init.vim<CR>:redraw!<CR>:echo "~/.config/nvim/init.vim reloaded!"<CR>
 
+" autocommand for running PackerCompile whenever plugins.lua is changed
+augroup packer_user_config
+  autocmd!
+  autocmd BufWritePost plugins.lua source <afile> | PackerCompile
+augroup end
+
+lua require('plugins')
+
 lua << EOF
 
 ----------------
@@ -14,6 +22,29 @@ lua << EOF
 ----------------
 require("scrollbar").setup()
 
+----------------
+-- Setup neoscroll
+----------------
+require('neoscroll').setup({
+  easing_function = "sine"
+})
+local scroll = {}
+-- Syntax: scroll[keys] = {function, {function arguments}}
+-- Use the "sine" easing function
+scroll['<C-u>'] = {'scroll', {'-vim.wo.scroll', 'true', '80', [['sine']]}}
+scroll['<C-d>'] = {'scroll', { 'vim.wo.scroll', 'true', '80', [['sine']]}}
+-- Use the "circular" easing function
+scroll['<C-b>'] = {'scroll', {'-vim.api.nvim_win_get_height(0)', 'true', '150', [['sine']]}}
+scroll['<C-f>'] = {'scroll', { 'vim.api.nvim_win_get_height(0)', 'true', '150', [['sine']]}}
+-- Pass "nil" to disable the easing animation (constant scrolling speed)
+--scroll['<C-y>'] = {'scroll', {'-0.10', 'false', '30', nil}}
+--scroll['<C-e>'] = {'scroll', { '0.10', 'false', '30', nil}}
+-- When no easing function is provided the default easing function (in this case "quadratic") will be used
+scroll['zt']    = {'zt', {'100'}}
+scroll['zz']    = {'zz', {'100'}}
+scroll['zb']    = {'zb', {'100'}}
+
+require('neoscroll.config').set_mappings(scroll)
 
 ----------------
 -- Setup Lualine
@@ -72,12 +103,13 @@ require'nvim-treesitter.configs'.setup {
   auto_install = true,
 
   -- List of parsers to ignore installing (for "all")
-  ignore_install = { "javascript" },
+  --ignore_install = { "javascript" },
 
   highlight = {
     -- `false` will disable the whole extension
     enable = true,
 
+    disable = {"javascript"},
 
     -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
     -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
@@ -95,22 +127,9 @@ require'nvim-treesitter.configs'.setup {
   },
 }
 
-
-------------------
--- Update lsp junk
-------------------
-local use = require('packer').use
-require('packer').startup(function()
-  use 'neovim/nvim-lspconfig' -- Collection of configurations for built-in LSP client
-  use 'hrsh7th/nvim-cmp' -- Autocompletion plugin
-  use 'hrsh7th/cmp-nvim-lsp' -- LSP source for nvim-cmp
-  use 'saadparwaiz1/cmp_luasnip' -- Snippets source for nvim-cmp
-  use 'L3MON4D3/LuaSnip' -- Snippets plugin
-end)
-
 -- Add additional capabilities supported by nvim-cmp
 local my_capabilities = vim.lsp.protocol.make_client_capabilities()
-my_capabilities = require('cmp_nvim_lsp').update_capabilities(my_capabilities)
+my_capabilities = require('cmp_nvim_lsp').default_capabilities(my_capabilities)
 
 local lspconfig = require('lspconfig')
 
@@ -151,6 +170,14 @@ lspconfig.pyright.setup {
   flags = {
       debounce_text_changes = 200,
       allow_incremental_sync = false
+  },
+  settings = {
+    python = {
+      analysis = {
+        autoSearchPaths = false,
+        useLibraryCodeForTypes = false,
+      }
+    }
   }
 }
 
@@ -216,3 +243,5 @@ cmp.setup {
   },
 }
 EOF
+set foldmethod=expr
+set foldexpr=nvim_treesitter#foldexpr()
