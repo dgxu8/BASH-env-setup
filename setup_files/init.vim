@@ -164,21 +164,13 @@ local my_on_attach = function(client, bufnr)
 end
 
 -- Enable some language servers with the additional completion capabilities offered by nvim-cmp
-lspconfig.pyright.setup {
+lspconfig.pylsp.setup {
   on_attach = my_on_attach,
   capabilities = my_capabilities,
   flags = {
       debounce_text_changes = 200,
       allow_incremental_sync = false
   },
-  settings = {
-    python = {
-      analysis = {
-        autoSearchPaths = false,
-        useLibraryCodeForTypes = false,
-      }
-    }
-  }
 }
 
 lspconfig.ccls.setup {

@@ -20,7 +20,10 @@ sudo apt install cmake
 
 echo "Installing pip stuff"
 sudo apt install python3-pip
-pip3 install pyright
+pip3 install python-lsp-server
+
+echo "install yarn"
+sudo npm install --global yarn
 
 echo "install yarn"
 sudo npm install --global yarn
