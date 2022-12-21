@@ -196,5 +196,16 @@ function set-title() {
   TITLE="\[\e]2;$*\a\]"
   PS1=${ORIG}${TITLE}
 }
+
+function git-sha() {
+  if [ $# -eq 0 ]; then
+    HEAD_ARG="HEAD"
+  else
+    HEAD_ARG="$1"
+  fi
+  git rev-parse ${HEAD_ARG} | xclip -sel clipboard
+  xclip -o -sel clipboard
+}
+
 . "$HOME/.cargo/env"
 export PATH=~/.local/bin:"$PATH"
