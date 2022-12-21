@@ -10,4 +10,3 @@ alias explore="explorer.exe ."
 export PATH=~/.local/bin:"$PATH"
 
 export LIBGL_ALWAYS_INDIRECT=1
-export DISPLAY=localhost:0.0
