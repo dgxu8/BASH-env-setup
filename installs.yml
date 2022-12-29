@@ -1,0 +1,118 @@
+dirs_aliases:
+  - &tmp_dir ~/Downloads/setup
+
+base_install_node: &base
+  __depends__: none
+  dir: none
+  pre_cmds: none
+  name: none
+  cmds: none
+
+# If no name, assume entry is string
+# cmds is expected to be a list
+basic_apt:
+  ripgrep: ripgrep
+  fd:
+    name: fd-find
+    cmds: sudo ln -s /usr/bin/fdfind /usr/bin/fd
+  git_gui: git-gui
+  clang: clang
+  libclang: libclang-12-dev
+  cmake: cmake
+  node: nodejs
+  npm: npm
+  rust:
+    pre_cmds: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    name: cargo
+  libevent: libevent-dev
+  libncurses5: libncurses5-dev
+
+wsl_apt:
+  ubuntu: ubuntu-desktop
+  yad: yad
+  gedit: gedit
+
+deprecated_apt:
+  ctags: exuberant-ctags
+
+basic_pip:
+  pylsp: python-lsp-server
+  pynvim: pynvim
+
+basic_rust:
+  # We don't lock the installs
+  __depends___: rust
+  minimap: code-minimap
+  gitui: gitui
+
+# All NPM installs are global
+basic_npm:
+  __depends__: npm
+  yarn: yarn
+  tldr: tldr
+  treesitter:
+    name: tree-sitter
+    cmds: yarn global add tree-sitter-cli
+
+basic_custom:
+  tmux:
+    __depends__: [libevent, libncurses5]
+    __rdepends__: [tpm, tmux_resurrect]
+    dir: *tmp_dir
+    cmds:
+      - tar -zxf tmux-*.tar.gz
+      - cd tmux-*/
+      - ./configure
+      - make && sudo make install
+  nvim:
+    # maybe ripgrep/fd
+    __rdepends__: [treesitter, pynvim, minimap, fzf, nvim_packer]
+    dirs: *tmp_dir
+    cmds:
+      - curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.deb
+      - sudo apt install ./nvim-linux64.deb
+      - nvim --version
+  lazygit:
+    dirs: *tmp_dir
+    cmds:
+      - args: >
+          curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[0-35.]+'
+        cmd: curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_{}_Linux_x86_64.tar.gz"
+      - sudo tar xf lazygit.tar.gz -C /usr/local/bin lazygit
+      - lazygit --version
+  gitprompt:
+    dirs: *tmp_dir
+    cmds:
+      - git clone https://github.com/git/git.git --no-checkout git_completion --depth 1
+      - cd git_completion
+      - git sparse-checkout init --cone
+      - git sparse-checkout set contrib/completion
+      - git checkout
+      - cp contrib/completion/git-prompt.sh ~/.git-prompt.sh
+  fzf:
+    cmds:
+      - git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+      - ~/.fzf/install
+  nvim_packer:
+    cmds: git clone --depth 1 https://github.com/wbthomason/packer.nvim
+          ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+  tpm:
+    description: TMUX plugin manager
+    cmds: git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+  ccls:
+    __depends__: [clang, libclang]
+    dirs: *tmp_dir
+    # might need to switch back to using llvm-10, idk
+    cmds:
+      - git clone --depth=1 --recursive https://github.com/MaskRay/ccls
+      - cd ccls
+      - cmake -H. -BRelease -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_PREFIX_PATH=/usr/lib/llvm-12
+        -DLLVM_INCLUDE_DIR=/usr/lib/llvm-12/include
+        -DLLVM_BUILD_INCLUDE_DIR=/usr/include/llvm-12/
+      - cmake --build Release
+      - cd Release
+      - sudo make install
+  tmux_resurrect:
+    cmds: git clone https://github.com/tmux-plugins/tmux-resurrect
+          ~/.tmux/tmux-resurrect
