@@ -182,6 +182,8 @@ alias cim="nvim"
 alias delet="find . -name '*.orig' -delete -print"
 alias copy="rsync -a --no-i-r --info=progress2"
 alias subdate="git submodule update --init --recursive"
+alias fz="fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}'"
+alias lx="exa"
 
 # This is to fix an issue with opening vim on a ssh session inside of tmux (tmux->ssh->vim).
 # This is because tmux sets TERM to tmux-256color which can break vim whil ssh'd in.

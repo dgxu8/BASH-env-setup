@@ -1,8 +1,11 @@
-dirs_aliases:
+_dirs_aliases:
   - &tmp_dir ~/Downloads/setup
 
-base_install_node: &base
+_base_install_node: &base
   __depends__: none
+  __rdepends__: none
+  _check_cmd: none
+  _install_fmt: none
   dir: none
   pre_cmds: none
   name: none
@@ -11,12 +14,14 @@ base_install_node: &base
 # If no name, assume entry is string
 # cmds is expected to be a list
 basic_apt:
+  _install_fmt: "sudo apt install {name}"
   ripgrep: ripgrep
   fd:
     name: fd-find
     cmds: sudo ln -s /usr/bin/fdfind /usr/bin/fd
   git_gui: git-gui
   clang: clang
+  curl: curl # type -p curl to check if we have it
   libclang: libclang-12-dev
   cmake: cmake
   node: nodejs
@@ -26,27 +31,44 @@ basic_apt:
     name: cargo
   libevent: libevent-dev
   libncurses5: libncurses5-dev
+  gh:
+    __depends__: curl
+    pre_cmds:
+      - curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+      - sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+      - echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list
+      - sudo apt update
+    name: gh # Requres apt update before apt install
+    cmds: gh auth login
+  meld: meld
 
 wsl_apt:
+  _install_fmt: "sudo apt install {name}"
   ubuntu: ubuntu-desktop
   yad: yad
   gedit: gedit
 
 deprecated_apt:
+  _install_fmt: "sudo apt install {name}"
   ctags: exuberant-ctags
 
 basic_pip:
+  _install_fmt: "pip3 install {name}"
   pylsp: python-lsp-server
   pynvim: pynvim
 
 basic_rust:
+  _install_fmt: "cargo install {name}"
   # We don't lock the installs
-  __depends___: rust
+  __depends__: rust
   minimap: code-minimap
   gitui: gitui
+  difftastic: difftastic
+  exa: exa
 
 # All NPM installs are global
 basic_npm:
+  _install_fmt: "sudo npm install -g {name}"
   __depends__: npm
   yarn: yarn
   tldr: tldr
@@ -54,34 +76,48 @@ basic_npm:
     name: tree-sitter
     cmds: yarn global add tree-sitter-cli
 
-basic_custom:
+basic_gh_release:
+  # Install via gh release download -R $repo -p $package_glob
+  _install_fmt: "gh release download -R {repo} -p {package_glob}"
+  __depends__: gh
+  batcat:
+    __rdepends__: bat_syntaxes
+    description: Improved cat
+    dir: *tmp_dir
+    repo: sharkdp/bat
+    package_glob: bat_*_amd64.deb
+    cmds: "sudo dpkg -i bat_*_amd64.deb"
   tmux:
     __depends__: [libevent, libncurses5]
     __rdepends__: [tpm, tmux_resurrect]
     dir: *tmp_dir
+    repo: tmux/tmux
+    package_glob: tmux-*.tar.gz
     cmds:
       - tar -zxf tmux-*.tar.gz
       - cd tmux-*/
       - ./configure
       - make && sudo make install
+  lazygit:
+    _install_fmt: "gh release download -R {repo} -p {package_glob} -o {package_out}"
+    dir: *tmp_dir
+    repo: jesseduffield/lazygit
+    package_glob: lazygit_*_Linux_x86_64.tar.gz
+    package_out: lazygit.tar.gz
+    cmds:
+      - sudo tar xf lazygit.tar.gz -C /usr/local/bin lazygit
+
+basic_custom:
   nvim:
     # maybe ripgrep/fd
     __rdepends__: [treesitter, pynvim, minimap, fzf, nvim_packer]
-    dirs: *tmp_dir
+    dir: *tmp_dir
     cmds:
       - curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.deb
       - sudo apt install ./nvim-linux64.deb
       - nvim --version
-  lazygit:
-    dirs: *tmp_dir
-    cmds:
-      - args: >
-          curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[0-35.]+'
-        cmd: curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_{}_Linux_x86_64.tar.gz"
-      - sudo tar xf lazygit.tar.gz -C /usr/local/bin lazygit
-      - lazygit --version
   gitprompt:
-    dirs: *tmp_dir
+    dir: *tmp_dir
     cmds:
       - git clone https://github.com/git/git.git --no-checkout git_completion --depth 1
       - cd git_completion
@@ -101,7 +137,7 @@ basic_custom:
     cmds: git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
   ccls:
     __depends__: [clang, libclang]
-    dirs: *tmp_dir
+    dir: *tmp_dir
     # might need to switch back to using llvm-10, idk
     cmds:
       - git clone --depth=1 --recursive https://github.com/MaskRay/ccls
@@ -116,3 +152,9 @@ basic_custom:
   tmux_resurrect:
     cmds: git clone https://github.com/tmux-plugins/tmux-resurrect
           ~/.tmux/tmux-resurrect
+  bat_syntaxes:
+    cmds:
+      - mkdir -p "$(bat --config-dir)/syntaxes"
+      - cd "$(bat --config-dir)/syntaxes"
+      - git clone https://github.com/Driim/bitbake-syntax
+      - bat cache --build
