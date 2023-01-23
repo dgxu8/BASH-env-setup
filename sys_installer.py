@@ -10,6 +10,9 @@ from copy import deepcopy
 from pathlib import Path
 from typing import List, Optional, Union
 
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import NestedCompleter, FuzzyCompleter
+
 # Yaml imports
 import yaml
 try:
@@ -131,7 +134,7 @@ class PackageNode:
 
 class InstalledHandler:
     def __init__(self):
-        self.install_yml = Path(os.path.expanduser("~/.config/custom_env/installed.yml"))
+        self.install_yml = Path(os.path.expanduser("~/.local/state/pkg_env/installed.yml"))
         self.install_yml.parent.mkdir(parents=True, exist_ok=True)
 
         self.installed_list = self.get_installed_packages()
@@ -225,10 +228,36 @@ def main():
 
     ilist.update_pkg_dict(pkg_dict)
 
-    new_pkgs = pkg_dict["lazygit"].install(pkg_dict)
+    list_sub = {
+        "all": None,
+        "current": None,
+        "new": None,
+    }
 
-    print(f"Installed {new_pkgs}")
-    ilist.update_installed_packages(new_pkgs)
+    base_cmds = {
+        "list": list_sub,
+        "check": None,
+        "install": None,
+        "update": None,
+        "exit": None,
+
+    }
+
+    completer = NestedCompleter.from_nested_dict(base_cmds)
+
+    new_pkgs: List[str] = []
+    try:
+        while True:
+            cmd = prompt("Enter command: ", completer=FuzzyCompleter(completer), complete_in_thread=True)
+            if cmd in ["exit", "stop", "quit"]:
+                break
+            print(f"Got: {cmd}")
+        #pkg_dict["lazygit"].install(pkg_dict)
+    except KeyboardInterrupt:
+        print("\nCaught keyboard interrupt")
+    finally:
+        print(f"\nInstalled {new_pkgs}")
+        ilist.update_installed_packages(new_pkgs)
 
 
 if __name__ == "__main__":
