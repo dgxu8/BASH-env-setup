@@ -8,10 +8,11 @@ import subprocess
 
 from copy import deepcopy
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List, Dict, Optional, Union
 
 from prompt_toolkit import prompt
-from prompt_toolkit.completion import NestedCompleter, FuzzyCompleter
+from prompt_toolkit.formatted_text import FormattedText
+from prompt_toolkit.completion import Completer, NestedCompleter, FuzzyCompleter, Completion, WordCompleter
 
 # Yaml imports
 import yaml
@@ -132,7 +133,7 @@ class PackageNode:
         return new_pkgs
 
 
-class InstalledHandler:
+class LocalStateHandler:
     def __init__(self):
         self.install_yml = Path(os.path.expanduser("~/.local/state/pkg_env/installed.yml"))
         self.install_yml.parent.mkdir(parents=True, exist_ok=True)
@@ -192,7 +193,7 @@ def parse_category(packages: dict) -> dict:
     return pkg_dict
 
 
-def build_dependency_dict():
+def build_dependency_dict() -> Dict[str, PackageNode]:
     """Parse insalls yaml and build package dependency dict"""
     with open(INSTALLS_FILE, "r") as stream:
         installs = yaml.load(stream, Loader=Loader)
@@ -207,31 +208,81 @@ def build_dependency_dict():
     return pkg_dict
 
 
+class PackageCompleter(NestedCompleter):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.packages: Dict[str, List[str]] = dict()
+
+    def add_pkg_list(self, entry: str, pkg_list: List[str]):
+        self.packages[entry] = pkg_list
+
+    def get_completions(self, document, complete_event):
+        yield from super().get_completions(document, complete_event)
+
+        text = document.text.split()
+        if len(text) > 0 and text[0] in self.packages:
+            cmp = WordCompleter(self.packages[text[0]])
+            yield from cmp.get_completions(document, complete_event)
+
+class PackageManager:
+    def __init__(self):
+        self.new_pkgs: List[str] = []
+        self.local_state = LocalStateHandler()
+        self.pkg_dict = build_dependency_dict()
+
+        self.local_state.update_pkg_dict(self.pkg_dict)
+
+    def save_new_pkgs(self):
+        print(f"\nInstalled {self.new_pkgs}")
+        self.local_state.update_installed_packages(self.new_pkgs)
+
+    def get_prompt_dict(self):
+        return {pkg_name: None for pkg_name in self.pkg_dict}
+
+    def get_list(self, sub_cmd: str) -> List[str]:
+        if sub_cmd == "current":
+            pkgs_list = self.local_state.installed_list
+        elif sub_cmd == "new":
+            pkgs_list = set(self.pkg_dict.keys()) - set(self.local_state.installed_list)
+        else:
+            pkgs_list = self.pkg_dict.keys()
+        pkgs = list(pkgs_list)
+        pkgs.sort()
+        return pkgs
+
+    def cmd_check(self, pkgs: List[str]):
+        for pkg in pkgs:
+            assert pkg in self.pkg_dict, f'"{pkg}" is not a valid package'
+            print(f"{pkg}:\t{self.pkg_dict[pkg].is_installed}")
+
+    def cmd_install(self, pkgs: List[str]):
+        for pkg in pkgs:
+            assert pkg in self.pkg_dict, f'"{pkg}" is not a valid package'
+            self.new_pkgs += self.pkg_dict[pkg].install(self.pkg_dict)
+
+
 def main():
     """Main Entry Point"""
     parser = argparse.ArgumentParser("Package Installer")
     parser.add_argument("-l", "--list", choices=["all", "current", "new"], default=None, help="List packages")
     args = parser.parse_args()
 
-    ilist = InstalledHandler()
-    pkg_dict = build_dependency_dict()
+    pkg = PackageManager()
 
     if args.list is not None:
-        if args.list == "all":
-            pkgs_list = pkg_dict.keys()
-        elif args.list == "current":
-            pkgs_list = ilist.installed_list
-        else:
-            pkgs_list = set(pkg_dict.keys()) - set(ilist.installed_list)
+        pkgs_list = pkg.get_list(args.list)
         print(", ".join(pkgs_list))
         return
 
-    ilist.update_pkg_dict(pkg_dict)
-
+    pkg_prompt_dict = pkg.get_prompt_dict()
     list_sub = {
         "all": None,
         "current": None,
         "new": None,
+    }
+    update_sub = {
+        "add": None,
+        "remove": None,
     }
 
     base_cmds = {
@@ -243,21 +294,38 @@ def main():
 
     }
 
-    completer = NestedCompleter.from_nested_dict(base_cmds)
+    completer = PackageCompleter.from_nested_dict(base_cmds)
+    completer.add_pkg_list("check", pkg.get_list("all"))
+    completer.add_pkg_list("install", pkg.get_list("new"))
+    completer.add_pkg_list("update", pkg.get_list("current"))
 
-    new_pkgs: List[str] = []
     try:
         while True:
-            cmd = prompt("Enter command: ", completer=FuzzyCompleter(completer), complete_in_thread=True)
+            cmd = prompt("Enter command: ", completer=FuzzyCompleter(completer))#, complete_in_thread=True)
             if cmd in ["exit", "stop", "quit"]:
                 break
-            print(f"Got: {cmd}")
-        #pkg_dict["lazygit"].install(pkg_dict)
+            print(f"Got: {cmd}\n")
+
+            cmd_list = cmd.split(" ")
+            if cmd_list[0] == "list":
+                assert len(cmd_list) <= 2
+                sub_cmd = "all" if len(cmd_list) == 1 else cmd_list[1]
+                pkgs_list = pkg.get_list(sub_cmd)
+                print(", ".join(pkgs_list))
+            elif cmd_list[0] == "check":
+                assert len(cmd_list) > 1
+                pkg.cmd_check(cmd_list[1:])
+            elif cmd_list[0] == "install":
+                assert len(cmd_list) > 1
+                pkg.cmd_install(cmd_list[1:])
+            elif cmd_list[0] == "update":
+                pass
     except KeyboardInterrupt:
         print("\nCaught keyboard interrupt")
+    except AssertionError as e:
+        print(e)
     finally:
-        print(f"\nInstalled {new_pkgs}")
-        ilist.update_installed_packages(new_pkgs)
+        pkg.save_new_pkgs()
 
 
 if __name__ == "__main__":
