@@ -8,7 +8,7 @@ import subprocess
 
 from copy import deepcopy
 from pathlib import Path
-from typing import List, Dict, Optional, Union
+from typing import List, Dict, Optional, Union, Set
 
 from prompt_toolkit import prompt
 from prompt_toolkit.formatted_text import FormattedText
@@ -138,9 +138,9 @@ class LocalStateHandler:
         self.install_yml = Path(os.path.expanduser("~/.local/state/pkg_env/installed.yml"))
         self.install_yml.parent.mkdir(parents=True, exist_ok=True)
 
-        self.installed_list = self.get_installed_packages()
+        self.installed_list = self._read_yaml()
 
-    def get_installed_packages(self) -> List[str]:
+    def _read_yaml(self) -> List[str]:
         """Get currently install objects from cfg file"""
         if not self.install_yml.exists():
             return []
@@ -148,18 +148,32 @@ class LocalStateHandler:
         with self.install_yml.open("r") as stream:
             return yaml.load(stream, Loader=Loader)
 
-    def update_installed_packages(self, pkgs: List[str]):
+    def add_pkgs(self, pkgs: List[str]):
         """Update yaml with newly installed packages"""
-        updated_list = list(set(self.installed_list + pkgs))
-        updated_list.sort()
+        for pkg in filter(lambda x: x in self.installed_list, pkgs):
+            print(f"{pkg} is already in yaml")
+        self.installed_list = list(set(self.installed_list + pkgs))
+        self.installed_list.sort()
 
-        with self.install_yml.open("w") as stream:
-            yaml.dump(updated_list, stream, Dumper=Dumper)
+        try:
+            with self.install_yml.open("w") as stream:
+                yaml.dump(self.installed_list, stream, Dumper=Dumper)
+        except Exception:
+            print(f"Failed to add {self.installed_list}")
+            raise
 
-    def update_pkg_dict(self, pkg_dict: dict):
-        """Sets is_installed to true on packages that are found in the yml cfg"""
-        for pkg in self.installed_list:
-            pkg_dict[pkg].is_installed = True
+    def remove_pkgs(self, pkgs: Set[str]):
+        for pkg in filter(lambda x: x not in self.installed_list, pkgs):
+            print(f"{pkg} not in yaml")
+        self.installed_list = list(set(self.installed_list) - pkgs)
+        self.installed_list.sort()
+
+        try:
+            with self.install_yml.open("w") as stream:
+                yaml.dump(self.installed_list, stream, Dumper=Dumper)
+        except Exception:
+            print(f"Failed to remove {self.installed_list}")
+            raise
 
 
 def listify_element(ele_dict, name) -> List[str]:
@@ -213,34 +227,32 @@ class PackageCompleter(NestedCompleter):
         super().__init__(*args, **kwargs)
         self.packages: Dict[str, List[str]] = dict()
 
-    def add_pkg_list(self, entry: str, pkg_list: List[str]):
-        self.packages[entry] = pkg_list
+    def add_list_cmd(self, cmd):
+        self.get_list = cmd
+
+    def add_pkg_list(self, entry: str, list_cmd):
+        self.packages[entry] = list_cmd
 
     def get_completions(self, document, complete_event):
         yield from super().get_completions(document, complete_event)
 
-        text = document.text.split()
-        if len(text) > 0 and text[0] in self.packages:
-            cmp = WordCompleter(self.packages[text[0]])
-            yield from cmp.get_completions(document, complete_event)
+        if len(document.text.split()) > 0:
+            text = document.text
+            for command in self.packages:
+                if text.startswith(command):
+                    list_cmd = self.packages[command]
+                    cmp = WordCompleter(self.get_list(list_cmd))
+                    yield from cmp.get_completions(document, complete_event)
 
 class PackageManager:
     def __init__(self):
-        self.new_pkgs: List[str] = []
         self.local_state = LocalStateHandler()
         self.pkg_dict = build_dependency_dict()
 
-        self.local_state.update_pkg_dict(self.pkg_dict)
-
-    def save_new_pkgs(self):
-        print(f"\nInstalled {self.new_pkgs}")
-        self.local_state.update_installed_packages(self.new_pkgs)
-
-    def get_prompt_dict(self):
-        return {pkg_name: None for pkg_name in self.pkg_dict}
+        self.update_pkg_dict(adds=self.local_state.installed_list)
 
     def get_list(self, sub_cmd: str) -> List[str]:
-        if sub_cmd == "current":
+        if sub_cmd == "curr":
             pkgs_list = self.local_state.installed_list
         elif sub_cmd == "new":
             pkgs_list = set(self.pkg_dict.keys()) - set(self.local_state.installed_list)
@@ -258,13 +270,52 @@ class PackageManager:
     def cmd_install(self, pkgs: List[str]):
         for pkg in pkgs:
             assert pkg in self.pkg_dict, f'"{pkg}" is not a valid package'
-            self.new_pkgs += self.pkg_dict[pkg].install(self.pkg_dict)
+            self.local_state.add_pkgs(self.pkg_dict[pkg].install(self.pkg_dict))
+
+    def cmd_update(self, cmd, pkgs: List[str]):
+        old_list = set(self.local_state.installed_list)
+        if cmd == "add":
+            self.local_state.add_pkgs(pkgs)
+            self.update_pkg_dict(adds=pkgs)
+
+            diff = set(self.local_state.installed_list) - old_list
+            print(f"Added {diff}")
+        elif cmd == "remove":
+            self.local_state.remove_pkgs(set(pkgs))
+            self.update_pkg_dict(removes=pkgs)
+
+            diff = old_list - set(self.local_state.installed_list)
+            print(f"Removed {diff}")
+
+    def update_pkg_dict(self,
+        adds: List[str] = [],
+        removes: List[str] = []
+    ):
+        for pkg in adds:
+            self.pkg_dict[pkg].is_installed = True
+        for pkg in removes:
+            self.pkg_dict[pkg].is_installed = False
+
+
+HELP_STR = """
+This script is used to manage system packages so they are sync'd across systems.
+
+\thelp        Shows this message
+\texit        Exists this program
+\tlist        Lists packages {"all", "curr", "new"}
+\tcheck       Checks to see if package is installed
+\tinstall     Install given list of packages
+
+The following are only used to manipulate the yaml file that tracks the installed packages.
+\tadd         Adds package to yaml, won't install
+\tremove      Removes package to yaml, won't uninstall
+"""
 
 
 def main():
     """Main Entry Point"""
     parser = argparse.ArgumentParser("Package Installer")
-    parser.add_argument("-l", "--list", choices=["all", "current", "new"], default=None, help="List packages")
+    parser.add_argument("-l", "--list", choices=["all", "curr", "new"], default=None, help="List packages")
     args = parser.parse_args()
 
     pkg = PackageManager()
@@ -274,30 +325,28 @@ def main():
         print(", ".join(pkgs_list))
         return
 
-    pkg_prompt_dict = pkg.get_prompt_dict()
     list_sub = {
         "all": None,
-        "current": None,
+        "curr": None,
         "new": None,
-    }
-    update_sub = {
-        "add": None,
-        "remove": None,
     }
 
     base_cmds = {
         "list": list_sub,
         "check": None,
         "install": None,
-        "update": None,
+        "add": None,
+        "remove": None,
+        "help": None,
         "exit": None,
-
     }
 
     completer = PackageCompleter.from_nested_dict(base_cmds)
-    completer.add_pkg_list("check", pkg.get_list("all"))
-    completer.add_pkg_list("install", pkg.get_list("new"))
-    completer.add_pkg_list("update", pkg.get_list("current"))
+    completer.add_list_cmd(pkg.get_list)
+    completer.add_pkg_list("check", "all")
+    completer.add_pkg_list("install", "new")
+    completer.add_pkg_list("add", "new")
+    completer.add_pkg_list("remove", "current")
 
     try:
         while True:
@@ -306,26 +355,34 @@ def main():
                 break
             print(f"Got: {cmd}\n")
 
-            cmd_list = cmd.split(" ")
-            if cmd_list[0] == "list":
+            cmd_list = cmd.split()
+            if len(cmd_list) == 0:
+                continue
+
+            cmd = cmd_list[0]
+            if cmd == "help":
+                print(HELP_STR)
+            elif cmd == "list":
                 assert len(cmd_list) <= 2
                 sub_cmd = "all" if len(cmd_list) == 1 else cmd_list[1]
                 pkgs_list = pkg.get_list(sub_cmd)
                 print(", ".join(pkgs_list))
-            elif cmd_list[0] == "check":
+            elif cmd == "check":
                 assert len(cmd_list) > 1
                 pkg.cmd_check(cmd_list[1:])
-            elif cmd_list[0] == "install":
+            elif cmd == "install":
                 assert len(cmd_list) > 1
                 pkg.cmd_install(cmd_list[1:])
-            elif cmd_list[0] == "update":
-                pass
+            elif cmd in ("add", "remove"):
+                assert len(cmd_list) > 1
+                pkg.cmd_update(cmd, cmd_list[1:])
+            else:
+                print(f"{cmd} is an invalid command")
+
     except KeyboardInterrupt:
         print("\nCaught keyboard interrupt")
     except AssertionError as e:
         print(e)
-    finally:
-        pkg.save_new_pkgs()
 
 
 if __name__ == "__main__":
