@@ -15,6 +15,7 @@ _base_install_node: &base
 # cmds is expected to be a list
 basic_apt:
   _install_fmt: "sudo apt install {name}"
+  _check_fmt: "dpkg -s {name} | grep 'ok installed'"
   ripgrep: ripgrep
   fd:
     name: fd-find

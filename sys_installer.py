@@ -27,14 +27,14 @@ INSTALLS_FILE = "installs.yml"
 DEPENDS_ATTR_KEY = "__depends__"
 RDEPENDS_ATTR_KEY = "__rdepends__"
 INSTALL_ATTR_KEY = "_install_fmt"
-CHECK_ATTR_KEY = "__check_cmd"
+CHECK_ATTR_KEY = "_check_fmt"
 
 class NodeAttributes:
     def __init__(self, pkg_info: Union[dict, str]):
         self.depends: List[str] = list()
         self.rdepends: List[str] = list()
         self.install_fmt = None
-        self.check_cmd = None
+        self.check_fmt = None
         if isinstance(pkg_info, dict):
             self.update_attr(pkg_info)
 
@@ -49,7 +49,7 @@ class NodeAttributes:
         self.depends += listify_element(pkg_info, DEPENDS_ATTR_KEY)
         self.rdepends += listify_element(pkg_info, RDEPENDS_ATTR_KEY)
         self.install_fmt = pkg_info.get(INSTALL_ATTR_KEY, self.install_fmt)
-        self.check_cmd = pkg_info.get(CHECK_ATTR_KEY, self.check_cmd)
+        self.check_fmt = pkg_info.get(CHECK_ATTR_KEY, self.check_fmt)
 
     def __str__(self):
         mstr = stringify(vars(self))
@@ -63,6 +63,7 @@ class PackageNode:
         self.is_installed = False
         self._key_name = key_name
         self.install_cmd = None
+        self.check_cmd = None
 
         if isinstance(pkg_info, str):
             pkg_info = {"name": pkg_info}
@@ -75,6 +76,13 @@ class PackageNode:
             print(f"Can't format install format. {self.attr.install_fmt}, {pkg_info}")
             raise
 
+        try:
+            if self.attr.check_fmt is not None:
+                self.check_cmd = self.attr.check_fmt.format(**pkg_info)
+        except KeyError:
+            print(f"Can't format check format. {self.attr.check_fmt}, {pkg_info}")
+            raise
+
         self.name = pkg_info.get("name", None)
         self.wrk_dir = os.path.expanduser(pkg_info["dir"]) if "dir" in pkg_info else None
         self.pre_cmds = listify_element(pkg_info, "pre_cmds")
@@ -82,6 +90,22 @@ class PackageNode:
 
     def __str__(self):
         return stringify(vars(self))
+
+    def check(self) -> bool:
+        installed = False
+        try:
+            if self.check_cmd is None:
+                print(f"No check command for {self._key_name}")
+            else:
+                ret = subprocess.run(self.check_cmd, shell=True, capture_output=True)
+                if ret.returncode == 0:
+                    installed = True
+
+        except subprocess.CalledProcessError:
+            print(f"Failed to run check command: {self.check_cmd}")
+            print(str(self), end="\n\n")
+            raise
+        return installed
 
     def install(self, pkg_dict, forced: bool = False) -> List[str]:
         """Install if not already installed
@@ -98,8 +122,6 @@ class PackageNode:
         # Install all depends
         for pkg in self.attr.depends:
             new_pkgs += pkg_dict[pkg].install(pkg_dict)
-
-        # TODO add _check_cmd handling
 
         if self.wrk_dir is not None:
             if not os.path.exists(self.wrk_dir):
@@ -150,10 +172,11 @@ class LocalStateHandler:
         with self.install_yml.open("r") as stream:
             return yaml.load(stream, Loader=Loader)
 
-    def add_pkgs(self, pkgs: List[str]):
+    def add_pkgs(self, pkgs: List[str], quiet: bool = False):
         """Update yaml with newly installed packages"""
-        for pkg in filter(lambda x: x in self.installed_list, pkgs):
-            print(f"{pkg} is already in yaml")
+        if not quiet:
+            for pkg in filter(lambda x: x in self.installed_list, pkgs):
+                print(f"{pkg} is already in yaml")
         self.installed_list = list(set(self.installed_list + pkgs))
         self.installed_list.sort()
 
@@ -164,9 +187,10 @@ class LocalStateHandler:
             print(f"Failed to add {self.installed_list}")
             raise
 
-    def remove_pkgs(self, pkgs: Set[str]):
-        for pkg in filter(lambda x: x not in self.installed_list, pkgs):
-            print(f"{pkg} not in yaml")
+    def remove_pkgs(self, pkgs: Set[str], quiet: bool = False):
+        if not quiet:
+            for pkg in filter(lambda x: x not in self.installed_list, pkgs):
+                print(f"{pkg} not in yaml")
         self.installed_list = list(set(self.installed_list) - pkgs)
         self.installed_list.sort()
 
@@ -251,7 +275,7 @@ class PackageManager:
         self.local_state = LocalStateHandler()
         self.pkg_dict = build_dependency_dict()
 
-        self.update_pkg_dict(adds=self.local_state.installed_list)
+        self.update_pkg_dict(adds=self.local_state.installed_list, quiet=True)
 
     def get_list(self, sub_cmd: str) -> List[str]:
         if sub_cmd == "curr":
@@ -265,9 +289,35 @@ class PackageManager:
         return pkgs
 
     def cmd_check(self, pkgs: List[str]):
+        add_pkgs: List[str] = []
+        remove_pkgs: List[str] = []
+
+        if "all" in pkgs:
+            pkgs = list(self.pkg_dict.keys())
+
         for pkg in pkgs:
             assert pkg in self.pkg_dict, f'"{pkg}" is not a valid package'
-            print(f"{pkg}:\t{self.pkg_dict[pkg].is_installed}")
+
+            pkg_node: PackageNode = self.pkg_dict[pkg]
+            if pkg_node.check_cmd is None:
+                print(f"{pkg}:\t{pkg_node.is_installed}")
+            else:
+                stored_val = pkg_node.is_installed
+                installed = self.pkg_dict[pkg].check()
+                print(f"{pkg}:\t{installed}")
+                if installed != stored_val:
+                    if installed:
+                        add_pkgs.append(pkg)
+                    else:
+                        remove_pkgs.append(pkg)
+
+        if len(add_pkgs + remove_pkgs) > 0:
+            print("Updating installed state")
+            if len(add_pkgs) > 0:
+                print(f"adds: {add_pkgs}")
+            if len(remove_pkgs) > 0:
+                print(f"removes: {remove_pkgs}")
+        self.update_pkg_dict(add_pkgs, remove_pkgs)
 
     def cmd_install(self, pkgs: List[str]):
         for pkg in pkgs:
@@ -277,26 +327,28 @@ class PackageManager:
     def cmd_update(self, cmd, pkgs: List[str]):
         old_list = set(self.local_state.installed_list)
         if cmd == "add":
-            self.local_state.add_pkgs(pkgs)
             self.update_pkg_dict(adds=pkgs)
-
             diff = set(self.local_state.installed_list) - old_list
             print(f"Added {diff}")
         elif cmd == "remove":
-            self.local_state.remove_pkgs(set(pkgs))
             self.update_pkg_dict(removes=pkgs)
-
             diff = old_list - set(self.local_state.installed_list)
             print(f"Removed {diff}")
 
     def update_pkg_dict(self,
         adds: List[str] = [],
-        removes: List[str] = []
+        removes: List[str] = [],
+        quiet: bool = False,
     ):
-        for pkg in adds:
-            self.pkg_dict[pkg].is_installed = True
-        for pkg in removes:
-            self.pkg_dict[pkg].is_installed = False
+        if len(adds) > 0:
+            self.local_state.add_pkgs(adds, quiet)
+            for pkg in adds:
+                self.pkg_dict[pkg].is_installed = True
+
+        if len(removes) > 0:
+            self.local_state.remove_pkgs(set(removes), quiet)
+            for pkg in removes:
+                self.pkg_dict[pkg].is_installed = False
 
 
 HELP_STR = """
@@ -335,7 +387,7 @@ def main():
 
     base_cmds = {
         "list": list_sub,
-        "check": None,
+        "check": {"all"},
         "install": None,
         "add": None,
         "remove": None,
@@ -348,7 +400,7 @@ def main():
     completer.add_pkg_list("check", "all")
     completer.add_pkg_list("install", "new")
     completer.add_pkg_list("add", "new")
-    completer.add_pkg_list("remove", "current")
+    completer.add_pkg_list("remove", "curr")
 
     try:
         while True:
