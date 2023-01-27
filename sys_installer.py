@@ -102,6 +102,8 @@ class PackageNode:
         # TODO add _check_cmd handling
 
         if self.wrk_dir is not None:
+            if not os.path.exists(self.wrk_dir):
+                os.makedirs(self.wrk_dir)
             os.chdir(self.wrk_dir)
             print(f"cd'ing to {os.getcwd()}")
 
