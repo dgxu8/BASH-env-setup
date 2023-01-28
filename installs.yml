@@ -26,7 +26,13 @@ basic_apt:
   libclang: libclang-12-dev
   cmake: cmake
   node: nodejs
-  npm: npm
+  npm:
+    name: npm
+    cmds:
+      - sudo npm install -g npm
+      - sudo npm cache clean --force
+      - sudo npm install -g n
+      - sudo n stable
   rust:
     pre_cmds: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
     name: cargo
@@ -42,6 +48,7 @@ basic_apt:
     name: gh # Requres apt update before apt install
     cmds: gh auth login
   meld: meld
+  lua: lua5.3
 
 wsl_apt:
   _install_fmt: "sudo apt install {name}"
@@ -66,16 +73,17 @@ basic_rust:
   gitui: gitui
   difftastic: difftastic
   exa: exa
+  treesitter_cli:
+    __depends__: treesitter
+    name: tree-sitter-cli
 
 # All NPM installs are global
 basic_npm:
   _install_fmt: "sudo npm install -g {name}"
   __depends__: npm
-  yarn: yarn
   tldr: tldr
   treesitter:
     name: tree-sitter
-    cmds: yarn global add tree-sitter-cli
 
 basic_gh_release:
   # Install via gh release download -R $repo -p $package_glob
@@ -111,7 +119,7 @@ basic_gh_release:
 basic_custom:
   nvim:
     # maybe ripgrep/fd
-    __rdepends__: [treesitter, pynvim, minimap, fzf, nvim_packer]
+    __rdepends__: [treesitter_cli, pynvim, minimap, fzf, nvim_packer]
     dir: *tmp_dir
     cmds:
       - curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.deb
@@ -159,3 +167,11 @@ basic_custom:
       - cd "$(bat --config-dir)/syntaxes"
       - git clone https://github.com/Driim/bitbake-syntax
       - bat cache --build
+  vim9:
+    __rdepends__: [lua]
+    dir: *tmp_dir
+    cmds:
+      - git clone https://github.com/vim/vim.git
+      - cd vim/src/
+      - make
+      - sudo make install

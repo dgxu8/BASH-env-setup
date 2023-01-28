@@ -8,7 +8,7 @@
 
 `:Files` - start fzf
 
-# Vim 
+# Vim
 
 ## Undo / Redo
 `u` - undo in normal mode
@@ -76,7 +76,7 @@ or
 ## Re-open session
 `tmux a -t [session name]`
 
-## Kill session 
+## Kill session
 `tmux kill-session -a/-t [name of session]`
 
 ## List tmux sessions
@@ -100,11 +100,11 @@ Ctl-a + t
 use ``` to block comment into a language
 
 # MDV
-mdv *file* -t *theme* 
+mdv *file* -t *theme*
 Themes *Value located in: *:
 
 - 528.9419 : warm
 - 546.7068 : shades of cool
 
 # vim-plug
-`:PlugInstall` - installs vim-plug pluggins 
+`:PlugInstall` - installs vim-plug pluggins

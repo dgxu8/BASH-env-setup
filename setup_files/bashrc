@@ -209,5 +209,15 @@ function git-sha() {
   xclip -o -sel clipboard
 }
 
+function manbat() {
+  bat --language manpage $@
+}
+
+function batman() {
+  # Use bat to display man page. aka batman
+  man $@ | manbat --style plain
+}
+alias bman=batman
+
 . "$HOME/.cargo/env"
 export PATH=~/.local/bin:"$PATH"
