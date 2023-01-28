@@ -141,9 +141,6 @@ if has('nvim')
     Plug 'L3MON4D3/LuaSnip'
 
     Plug 'onsails/lspkind-nvim'
-
-    " treesitter coloring
-    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 endif
 
 "Add plugins to &runtimepath

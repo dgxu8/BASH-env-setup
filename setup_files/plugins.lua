@@ -18,4 +18,14 @@ return require('packer').startup(function(use)
 
   -- neoscroll
   use 'karb94/neoscroll.nvim'
+
+  -- tree-sitter
+  use {
+    'nvim-treesitter/nvim-treesitter',
+    run = function()
+        local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
+        ts_update()
+    end,
+  }
+  use 'nvim-treesitter/playground'
 end)

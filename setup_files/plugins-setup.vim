@@ -14,19 +14,18 @@ cnoreabbrev AG Ack
 
 " {{{ vim-esearch
 " NeoVim/Vim plugin performing project-wide async search and replace, similar to SublimeText, Atom et al.
-let g:esearch = {
-      \ 'adapter':    'rg',
-      \ 'backend':    'system',
-      \ 'out':        'win',
-      \ 'batch_size': 1000,
-      \ 'wordchars': '@,48-57,_,192-255',
-      \ 'prefill':        ['hlsearch', 'last'],
-      \}
-
+let g:esearch = {}
+let g:esearch.regex = 1
+let g:esearch.case = 'smart'
+let g:esearch.backend = 'nvim'
+let g:esearch.out = 'qflist'
+let g:esearch.prefill = ['hlsearch', 'last']
+let g:esearch.adapter = 'rg'
 let g:esearch.root_markers = ['']
-let g:esearch#out#win#open = 'vertical botright new'
-let g:esearch#adapter#ag#options = "-U"
-let g:esearch#util#trunc_omission = "|"
+let g:esearch.name = '[esearch]'
+let g:esearch.win_new = {esearch -> esearch#buf#goto_or_open(esearch.name, 'vnew')}
+let g:esearch#adapter#ag#options = '-U'
+let g:esearch#util#trunc_omission = '|'
 " }}}
 
 " vim: set foldmethod=marker:
