@@ -43,10 +43,8 @@ Plug 'airblade/vim-gitgutter'
 Plug 'scrooloose/nerdtree'
 " }}}
 
-" {{{ vim-solarized
-" Solarized colorscheme. Simpler fork of 'altercation/vim-colors-solarized'
-Plug 'ericbn/vim-solarized'
-" }}}
+" Backup formating
+Plug 'mhartington/oceanic-next'
 
 " {{{ Vim Linux Coding Style
 Plug 'vivien/vim-linux-coding-style'

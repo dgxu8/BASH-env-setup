@@ -34,3 +34,13 @@ let g:esearch#util#trunc_omission = '|'
 let g:minimap_auto_start = 1
 let g:minimap_auto_start_win_enter = 1
 let g:minimap_width = 8
+
+" Setup oceanic-next colorscheme
+if (has("termguicolors"))
+  set termguicolors
+endif
+
+syntax on
+let g:oceanic_next_terminal_bold = 1
+let g:oceanic_next_terminal_italic = 1
+colorscheme OceanicNext

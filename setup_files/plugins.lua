@@ -7,7 +7,7 @@ return require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
 
   -- colorscheme
-  use 'RRethy/nvim-base16'
+  use "EdenEast/nightfox.nvim"
 
   -- lsp stuff
   use 'neovim/nvim-lspconfig' -- Collection of configurations for built-in LSP client

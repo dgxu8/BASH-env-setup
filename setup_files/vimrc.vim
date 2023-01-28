@@ -69,11 +69,6 @@ if has('gui_running')
 endif
 
 filetype plugin indent on
-syntax on
-set t_Co=256
-set background=dark
-colorscheme solarized
-set termguicolors
 
 noremap <leader>n :set relativenumber!<CR>
 
