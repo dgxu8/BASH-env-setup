@@ -107,6 +107,17 @@ class PackageNode:
             raise
         return installed
 
+    def _run_cmds(self, cmds: List[str]):
+        for cmd in cmds:
+            cmd_list = cmd.split()
+            if cmd_list[0] == "cd":
+                assert len(cmd_list) == 2, f"Too many arguments for cd command: {cmd}"
+                dest = os.path.expanduser(cmd_list[1])
+                print(f"cd'ing to {dest}")
+                os.chdir(dest)
+            else:
+                subprocess.run(cmd, shell=True, check=True)
+
     def install(self, pkg_dict, forced: bool = False) -> List[str]:
         """Install if not already installed
 
@@ -133,17 +144,16 @@ class PackageNode:
         try:
             if len(self.pre_cmds) > 0:
                 print("Running pre-commands")
-            for cmd in self.pre_cmds:
-                subprocess.run(cmd, shell=True, check=True)
+                self._run_cmds(self.pre_cmds)
 
             if self.install_cmd is not None:
                 print("Running install command")
                 subprocess.run(self.install_cmd, shell=True, check=True)
 
-            if len(self.pre_cmds) > 0:
+            if len(self.cmds) > 0:
                 print("Running commands")
-            for cmd in self.cmds:
-                subprocess.run(cmd, shell=True, check=True)
+                self._run_cmds(self.cmds)
+
         except subprocess.CalledProcessError:
             print(f"\n===Failed to install {self._key_name}===")
             print(str(self), end="\n\n")

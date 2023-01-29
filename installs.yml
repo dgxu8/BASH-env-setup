@@ -52,21 +52,25 @@ basic_apt:
 
 wsl_apt:
   _install_fmt: "sudo apt install {name}"
+  _check_fmt: "dpkg -s {name} | grep 'ok installed'"
   ubuntu: ubuntu-desktop
   yad: yad
   gedit: gedit
 
 deprecated_apt:
   _install_fmt: "sudo apt install {name}"
+  _check_fmt: "dpkg -s {name} | grep 'ok installed'"
   ctags: exuberant-ctags
 
 basic_pip:
   _install_fmt: "pip3 install {name}"
+  _check_fmt: "pip3 show {name}"
   pylsp: python-lsp-server
   pynvim: pynvim
 
 basic_rust:
   _install_fmt: "cargo install {name}"
+  _check_fmt: "cargo install --list | grep -w {name}"
   # We don't lock the installs
   __depends__: rust
   minimap: code-minimap
@@ -80,6 +84,7 @@ basic_rust:
 # All NPM installs are global
 basic_npm:
   _install_fmt: "sudo npm install -g {name}"
+  _check_fmt: "npm list -g {name}"
   __depends__: npm
   tldr: tldr
   treesitter:
@@ -88,11 +93,13 @@ basic_npm:
 basic_gh_release:
   # Install via gh release download -R $repo -p $package_glob
   _install_fmt: "gh release download -R {repo} -p {package_glob}"
+  _check_fmt: "which {name}"
   __depends__: gh
   batcat:
     __rdepends__: bat_syntaxes
-    description: Improved cat
     dir: *tmp_dir
+    name: bat
+    description: Improved cat
     repo: sharkdp/bat
     package_glob: bat_*_amd64.deb
     cmds: "sudo dpkg -i bat_*_amd64.deb"
@@ -100,16 +107,19 @@ basic_gh_release:
     __depends__: [libevent, libncurses5]
     __rdepends__: [tpm, tmux_resurrect]
     dir: *tmp_dir
+    name: tmux
     repo: tmux/tmux
     package_glob: tmux-*.tar.gz
     cmds:
       - tar -zxf tmux-*.tar.gz
       - cd tmux-*/
       - ./configure
-      - make && sudo make install
+      - make -j 20
+      - sudo make install
   lazygit:
     _install_fmt: "gh release download -R {repo} -p {package_glob} -o {package_out}"
     dir: *tmp_dir
+    name: lazygit
     repo: jesseduffield/lazygit
     package_glob: lazygit_*_Linux_x86_64.tar.gz
     package_out: lazygit.tar.gz
@@ -117,15 +127,18 @@ basic_gh_release:
       - sudo tar xf lazygit.tar.gz -C /usr/local/bin lazygit
 
 basic_custom:
+  _check_fmt: "which {name}"
   nvim:
     # maybe ripgrep/fd
     __rdepends__: [treesitter_cli, pynvim, minimap, fzf, nvim_packer]
     dir: *tmp_dir
+    name: nvim
     cmds:
       - curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.deb
       - sudo apt install ./nvim-linux64.deb
       - nvim --version
   gitprompt:
+    _check_fmt: "test -f ~/.git-prompt.sh"
     dir: *tmp_dir
     cmds:
       - git clone https://github.com/git/git.git --no-checkout git_completion --depth 1
@@ -135,18 +148,22 @@ basic_custom:
       - git checkout
       - cp contrib/completion/git-prompt.sh ~/.git-prompt.sh
   fzf:
+    name: fzf
     cmds:
       - git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
       - ~/.fzf/install
   nvim_packer:
+    _check_fmt: "test -d ~/.local/share/nvim/site/pack/packer/start/packer.nvim/"
     cmds: git clone --depth 1 https://github.com/wbthomason/packer.nvim
           ~/.local/share/nvim/site/pack/packer/start/packer.nvim
   tpm:
+    _check_fmt: "test -d ~/.tmux/plugins/tpm"
     description: TMUX plugin manager
     cmds: git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
   ccls:
     __depends__: [clang, libclang]
     dir: *tmp_dir
+    name: ccls
     # might need to switch back to using llvm-10, idk
     cmds:
       - git clone --depth=1 --recursive https://github.com/MaskRay/ccls
@@ -159,19 +176,22 @@ basic_custom:
       - cd Release
       - sudo make install
   tmux_resurrect:
+    _check_fmt: "test -d ~/.tmux/tmux-resurrect"
     cmds: git clone https://github.com/tmux-plugins/tmux-resurrect
           ~/.tmux/tmux-resurrect
   bat_syntaxes:
+    _check_fmt: "bat --list-languages | grep BitBake"
     cmds:
-      - mkdir -p "$(bat --config-dir)/syntaxes"
-      - cd "$(bat --config-dir)/syntaxes"
+      - mkdir -p ~/.config/bat/syntaxes
+      - cd ~/.config/bat/syntaxes
       - git clone https://github.com/Driim/bitbake-syntax
       - bat cache --build
   vim9:
     __rdepends__: [lua]
     dir: *tmp_dir
+    name: vim
     cmds:
       - git clone https://github.com/vim/vim.git
       - cd vim/src/
-      - make
+      - make -j 20
       - sudo make install

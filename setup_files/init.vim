@@ -23,8 +23,8 @@ require("nightfox").setup({
     carbonfox = {
       bg0 = "#161616",
       bg1 = "#252525",
-      bg2 = "#353535",
-      bg3 = "#474747",
+      bg2 = "#323232",
+      bg3 = "#383838",
       bg4 = "#727274",
       fg0 = "#f9fbff",
       fg1 = "#f2f4f8",
