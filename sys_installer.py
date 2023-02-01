@@ -212,74 +212,6 @@ class LocalStateHandler:
             raise
 
 
-def listify_element(ele_dict, name) -> List[str]:
-    """Returns list version of a specific entry"""
-    entry: Union[List[str], str] = ele_dict.get(name, [])
-    return [entry] if isinstance(entry, str) else entry
-
-
-def stringify(class_dict: dict) -> str:
-    """Convert class dict to string"""
-    is_valid = lambda n, v: not (
-        n.startswith("__")
-        or (v is None)
-        or (isinstance(v, (list, tuple)) and len(v) == 0)
-    )
-    return ", ".join([f"{k}: {v}" for (k, v) in class_dict.items() if is_valid(k, v)])
-
-
-def parse_category(packages: dict) -> dict:
-    """Parse packge descriptions"""
-
-    # Get archetype attributes
-    pkg_dict: dict = dict()
-    arch_attr = NodeAttributes(packages)
-    for key, value in packages.items():
-        if key[0] == "_":
-            continue
-
-        pkg_dict[key] = PackageNode(key, value, arch_attr)
-
-    return pkg_dict
-
-
-def build_dependency_dict() -> Dict[str, PackageNode]:
-    """Parse insalls yaml and build package dependency dict"""
-    with open(INSTALLS_FILE, "r") as stream:
-        installs = yaml.load(stream, Loader=Loader)
-
-    # archetype
-    pkg_dict: dict = dict()
-    for archetype, packages in installs.items():
-        if archetype[0] == "_":
-            continue
-        pkg_dict.update(parse_category(packages))
-
-    return pkg_dict
-
-
-class PackageCompleter(NestedCompleter):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.packages: Dict[str, List[str]] = dict()
-
-    def add_list_cmd(self, cmd):
-        self.get_list = cmd
-
-    def add_pkg_list(self, entry: str, list_cmd):
-        self.packages[entry] = list_cmd
-
-    def get_completions(self, document, complete_event):
-        yield from super().get_completions(document, complete_event)
-
-        if len(document.text.split()) > 0:
-            text = document.text
-            for command in self.packages:
-                if text.startswith(command):
-                    list_cmd = self.packages[command]
-                    cmp = WordCompleter(self.get_list(list_cmd))
-                    yield from cmp.get_completions(document, complete_event)
-
 class PackageManager:
     def __init__(self):
         self.local_state = LocalStateHandler()
@@ -346,10 +278,10 @@ class PackageManager:
             print(f"Removed {diff}")
 
     def update_pkg_dict(self,
-        adds: List[str] = [],
-        removes: List[str] = [],
-        quiet: bool = False,
-    ):
+                        adds: List[str] = [],
+                        removes: List[str] = [],
+                        quiet: bool = False,
+                        ):
         if len(adds) > 0:
             self.local_state.add_pkgs(adds, quiet)
             for pkg in adds:
@@ -359,6 +291,75 @@ class PackageManager:
             self.local_state.remove_pkgs(set(removes), quiet)
             for pkg in removes:
                 self.pkg_dict[pkg].is_installed = False
+
+
+class PackageCompleter(NestedCompleter):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.packages: Dict[str, List[str]] = dict()
+
+    def add_list_cmd(self, cmd):
+        self.get_list = cmd
+
+    def add_pkg_list(self, entry: str, list_cmd):
+        self.packages[entry] = list_cmd
+
+    def get_completions(self, document, complete_event):
+        yield from super().get_completions(document, complete_event)
+
+        if len(document.text.split()) > 0:
+            text = document.text
+            for command in self.packages:
+                if text.startswith(command):
+                    list_cmd = self.packages[command]
+                    cmp = WordCompleter(self.get_list(list_cmd))
+                    yield from cmp.get_completions(document, complete_event)
+
+
+def listify_element(ele_dict, name) -> List[str]:
+    """Returns list version of a specific entry"""
+    entry: Union[List[str], str] = ele_dict.get(name, [])
+    return [entry] if isinstance(entry, str) else entry
+
+
+def stringify(class_dict: dict) -> str:
+    """Convert class dict to string"""
+    is_valid = lambda n, v: not (
+        n.startswith("__")
+        or (v is None)
+        or (isinstance(v, (list, tuple)) and len(v) == 0)
+    )
+    return ", ".join([f"{k}: {v}" for (k, v) in class_dict.items() if is_valid(k, v)])
+
+
+def parse_category(packages: dict) -> dict:
+    """Parse packge descriptions"""
+
+    # Get archetype attributes
+    pkg_dict: dict = dict()
+    arch_attr = NodeAttributes(packages)
+    for key, value in packages.items():
+        if key[0] == "_":
+            continue
+
+        pkg_dict[key] = PackageNode(key, value, arch_attr)
+
+    return pkg_dict
+
+
+def build_dependency_dict() -> Dict[str, PackageNode]:
+    """Parse insalls yaml and build package dependency dict"""
+    with open(INSTALLS_FILE, "r") as stream:
+        installs = yaml.load(stream, Loader=Loader)
+
+    # archetype
+    pkg_dict: dict = dict()
+    for archetype, packages in installs.items():
+        if archetype[0] == "_":
+            continue
+        pkg_dict.update(parse_category(packages))
+
+    return pkg_dict
 
 
 HELP_STR = """
