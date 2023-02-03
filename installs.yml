@@ -14,7 +14,7 @@ _base_install_node: &base
 # If no name, assume entry is string
 # cmds is expected to be a list
 basic_apt:
-  _install_fmt: "sudo apt install {name}"
+  _install_fmt: "sudo apt install {name} -y"
   _check_fmt: "dpkg -s {name} | grep 'ok installed'"
   ripgrep: ripgrep
   fd:
@@ -49,6 +49,13 @@ basic_apt:
     cmds: gh auth login
   meld: meld
   lua: lua5.3
+  pkgcfg: pkg-config
+  libfmt-dev: libfmt-dev
+  libspdlog-dev: libspdlog-dev
+  nlohmann-json3-dev: nlohmann-json3-dev
+  libgrpc++-dev: libgrpc++-dev
+  protobuf-compiler-grpc: protobuf-compiler-grpc
+  libssl-dev: libssl-dev
 
 wsl_apt:
   _install_fmt: "sudo apt install {name}"
@@ -67,6 +74,7 @@ basic_pip:
   _check_fmt: "pip3 show {name}"
   pylsp: python-lsp-server
   pynvim: pynvim
+  grip: grip
 
 basic_rust:
   _install_fmt: "cargo install {name}"
@@ -194,4 +202,15 @@ basic_custom:
       - git clone https://github.com/vim/vim.git
       - cd vim/src/
       - make -j 20
+      - sudo make install
+  bear:
+    __depends__: [cmake, pkgcfg, libfmt-dev, libspdlog-dev, nlohmann-json3-dev, libgrpc++-dev, protobuf-compiler-grpc, libssl-dev]
+    dir: *tmp_dir
+    name: bear
+    description: Used to generate a compile_commands.json.
+    cmds:
+      - git clone https://github.com/rizsotto/Bear.git
+      - cd Bear
+      - cmake -DENABLE_UNIT_TESTS=OFF -DENABLE_FUNC_TESTS=OFF $BEAR_SOURCE_DIR
+      - make all -j 20
       - sudo make install

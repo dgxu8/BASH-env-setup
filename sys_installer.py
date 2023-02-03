@@ -285,12 +285,14 @@ class PackageManager:
         if len(adds) > 0:
             self.local_state.add_pkgs(adds, quiet)
             for pkg in adds:
-                self.pkg_dict[pkg].is_installed = True
+                if pkg in self.pkg_dict:
+                    self.pkg_dict[pkg].is_installed = True
 
         if len(removes) > 0:
             self.local_state.remove_pkgs(set(removes), quiet)
             for pkg in removes:
-                self.pkg_dict[pkg].is_installed = False
+                if pkg in self.pkg_dict:
+                    self.pkg_dict[pkg].is_installed = False
 
 
 class PackageCompleter(NestedCompleter):
@@ -402,6 +404,7 @@ def main():
         "install": None,
         "add": None,
         "remove": None,
+        "clean": None,
         "help": None,
         "exit": None,
     }
@@ -441,6 +444,8 @@ def main():
             elif cmd in ("add", "remove"):
                 assert len(cmd_list) > 1
                 pkg.cmd_update(cmd, cmd_list[1:])
+            elif cmd == "clean":
+                print("Remove packages is installed yaml if not in install list")
             else:
                 print(f"{cmd} is an invalid command")
 
