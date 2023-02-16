@@ -124,10 +124,10 @@ set mouse=a
 
 """"" Key remaps """""
 " mouse mouse with <F2> and <F3>
-map <F2> :set mouse=a<CR>
-map! <F2> <C-O>:set mouse=a<CR>
-map <F3> :set mouse-=a<CR>
-map! <F3> <C-O>:set mouse-=a<CR>
+"map <F2> :set mouse=a<CR>
+"map! <F2> <C-O>:set mouse=a<CR>
+"map <F3> :set mouse-=a<CR>
+"map! <F3> <C-O>:set mouse-=a<CR>
 
 " unhighlight search w/ space
 nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
@@ -185,7 +185,7 @@ nmap <leader>~ :source ~/.vimrc<CR>:redraw!<CR>:echo "~/.vimrc reloaded!"<CR>
 nmap <leader>l :set list!<CR>
 
 " leader f to search for filename under cursor using fzf
-nnoremap <leader>f <Esc>:call fzf#vim#files('', {'options':'--query='.fzf#shellescape(expand('<cfile>:t'))})<CR>
+"nnoremap <leader>f <Esc>:call fzf#vim#files('', {'options':'--query='.fzf#shellescape(expand('<cfile>:t'))})<CR>
 
 " leader o to open directory of the current file.
 nnoremap <leader>o <Esc>:exec "e " . expand('%:p:h')<CR>

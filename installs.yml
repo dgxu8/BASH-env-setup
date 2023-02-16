@@ -25,14 +25,6 @@ basic_apt:
   curl: curl # type -p curl to check if we have it
   libclang: libclang-12-dev
   cmake: cmake
-  node: nodejs
-  npm:
-    name: npm
-    cmds:
-      - sudo npm install -g npm
-      - sudo npm cache clean --force
-      - sudo npm install -g n
-      - sudo n stable
   rust:
     pre_cmds: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
     name: cargo
@@ -214,3 +206,10 @@ basic_custom:
       - cmake -DENABLE_UNIT_TESTS=OFF -DENABLE_FUNC_TESTS=OFF $BEAR_SOURCE_DIR
       - make all -j 20
       - sudo make install
+  nvm:
+    _check_fmt: "nvm version"
+    cmds: sudo wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+  npm:
+    __depends__: [nvm]
+    name: npm
+    cmds: sudo nvm install --latest-npm

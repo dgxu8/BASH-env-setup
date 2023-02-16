@@ -10,14 +10,14 @@ esac
 
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
-HISTCONTROL=ignoreboth
+HISTCONTROL=ignoredups:erasedups
 
 # append to the history file, don't overwrite it
 shopt -s histappend
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=1000
-HISTFILESIZE=2000
+HISTSIZE=10000
+HISTFILESIZE=20000
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -133,6 +133,8 @@ fi
 alias ll='exa -alF'
 alias la='exa -a'
 alias l='exa'
+alias lx="exa"
+alias tree="exa -T"
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -183,7 +185,7 @@ alias delet="find . -name '*.orig' -delete -print"
 alias copy="rsync -a --no-i-r --info=progress2"
 alias subdate="git submodule update --init --recursive"
 alias fz="fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}'"
-alias lx="exa"
+alias synch="history -a; history -c; history -r;"
 
 # This is to fix an issue with opening vim on a ssh session inside of tmux (tmux->ssh->vim).
 # This is because tmux sets TERM to tmux-256color which can break vim whil ssh'd in.
@@ -221,3 +223,7 @@ alias bman=batman
 
 . "$HOME/.cargo/env"
 export PATH=~/.local/bin:"$PATH"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

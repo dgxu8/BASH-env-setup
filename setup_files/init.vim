@@ -13,8 +13,57 @@ augroup packer_user_config
   autocmd BufWritePost plugins.lua source <afile> | PackerCompile
 augroup end
 
+nnoremap <leader>fw :execute 'Telescope live_grep default_text=' . expand('<cword>')<cr>
 lua require('plugins')
 lua << EOF
+
+----------------
+-- Setup telescope
+----------------
+require("telescope").setup({
+  defaults = {
+    layout_config = {
+      horizontal = {
+        width = 0.99,
+        height = 0.95,
+      },
+    },
+  },
+  pickers = {
+    live_grep = {
+      theme = "cursor",
+      layout_config = {
+        width = 0.99,
+        height = 0.5,
+      },
+    },
+    buffers = {
+      show_all_buffers = true,
+      sort_lastused = true,
+      theme = "dropdown",
+      mappings = {
+        i = {
+          ["<c-d>"] = "delete_buffer",
+        },
+      },
+    },
+  },
+  extensions = {
+    fzf = {
+      fuzzy = true,
+      override_generic_sorter = true,
+      override_file_sorter = true,
+      case_mode = "smart_case",
+    },
+  },
+})
+-- load_extension, somewhere after setup function:
+require('telescope').load_extension('fzf')
+local builtin = require('telescope.builtin')
+
+vim.keymap.set('n', '<C-p>', builtin.find_files, {})
+--vim.keymap.set('n', '<leader>fw', builtin.live_grep, {})
+vim.keymap.set('n', '<F4>', builtin.buffers, {})
 
 -- Start colorscheme
 require("nightfox").setup({

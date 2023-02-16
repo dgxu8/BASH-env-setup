@@ -7,3 +7,7 @@ Install scripts in the following order:
 
 ## For WSL run
 - wsl_setup.sh
+
+## Improve wsl ssh performance
+In powershell run:
+New-NetFirewallRule -DisplayName "WSL" -Direction Inbound -InterfaceAlias "vEthernet (WSL)" -Action Allow
