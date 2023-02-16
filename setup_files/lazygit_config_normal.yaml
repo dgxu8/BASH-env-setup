@@ -1,0 +1,20 @@
+os:
+  editCommand: 'vim'
+
+keybinding:
+  commits:
+    moveDownCommit: 'J'
+    moveUpCommit: 'K'
+
+customCommands:
+  - key: 'E'
+    description: 'Add empty commit'
+    context: 'commits'
+    command: 'git commit --allow-empty -m "empty"'
+    loadingText: 'Committing empty commit...'
+
+  - key: 'P'
+    description: 'Push selected commit'
+    command: 'git push {{.SelectedLocalCommit.Sha}}'
+    context: 'commits'
+    loadingText: 'Pushing'

@@ -236,6 +236,9 @@ class PackageManager:
 
         if "all" in pkgs:
             pkgs = list(self.pkg_dict.keys())
+        elif "new" in pkgs:
+            new = set(self.pkg_dict.keys()) - set(self.local_state.installed_list)
+            pkgs = list(new)
 
         for pkg in pkgs:
             assert pkg in self.pkg_dict, f'"{pkg}" is not a valid package'
@@ -400,7 +403,7 @@ def main():
 
     base_cmds = {
         "list": list_sub,
-        "check": {"all"},
+        "check": {"all", "new"},
         "install": None,
         "add": None,
         "remove": None,
