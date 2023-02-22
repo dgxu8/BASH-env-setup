@@ -15,6 +15,6 @@ customCommands:
 
   - key: 'P'
     description: 'Push selected commit'
-    command: 'git push {{.SelectedLocalCommit.Sha}}'
+    command: 'git push origin {{.SelectedLocalCommit.Sha}}:{{.CheckedOutBranch.Name}}'
     context: 'commits'
     loadingText: 'Pushing'
