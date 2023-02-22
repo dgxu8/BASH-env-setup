@@ -48,6 +48,12 @@ basic_apt:
   libgrpc++-dev: libgrpc++-dev
   protobuf-compiler-grpc: protobuf-compiler-grpc
   libssl-dev: libssl-dev
+  npm:
+    __depends__: curl
+    pre_cmds:
+      - curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
+      - sudo apt-get install -y nodejs
+    name: nodejs
 
 wsl_apt:
   _install_fmt: "sudo apt install {name}"
@@ -205,10 +211,3 @@ basic_custom:
       - cmake -DENABLE_UNIT_TESTS=OFF -DENABLE_FUNC_TESTS=OFF $BEAR_SOURCE_DIR
       - make all -j 20
       - sudo make install
-  nvm:
-    _check_fmt: "nvm version"
-    cmds: sudo wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-  npm:
-    __depends__: [nvm]
-    name: npm
-    cmds: sudo nvm install --latest-npm
