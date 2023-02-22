@@ -23,7 +23,7 @@ basic_apt:
   git_gui: git-gui
   clang: clang
   curl: curl # type -p curl to check if we have it
-  libclang: libclang-12-dev
+  libclang: libclang-10-dev
   cmake: cmake
   rust:
     pre_cmds: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -164,14 +164,13 @@ basic_custom:
     __depends__: [clang, libclang]
     dir: *tmp_dir
     name: ccls
-    # might need to switch back to using llvm-10, idk
     cmds:
       - git clone --depth=1 --recursive https://github.com/MaskRay/ccls
       - cd ccls
       - cmake -H. -BRelease -DCMAKE_BUILD_TYPE=Release
-        -DCMAKE_PREFIX_PATH=/usr/lib/llvm-12
-        -DLLVM_INCLUDE_DIR=/usr/lib/llvm-12/include
-        -DLLVM_BUILD_INCLUDE_DIR=/usr/include/llvm-12/
+        -DCMAKE_PREFIX_PATH=/usr/lib/llvm-10
+        -DLLVM_INCLUDE_DIR=/usr/lib/llvm-10/include
+        -DLLVM_BUILD_INCLUDE_DIR=/usr/include/llvm-10/
       - cmake --build Release
       - cd Release
       - sudo make install
