@@ -73,6 +73,7 @@ basic_pip:
   pylsp: python-lsp-server
   pynvim: pynvim
   grip: grip
+  tmuxp: tmuxp
 
 basic_rust:
   _install_fmt: "cargo install {name}"
@@ -136,7 +137,7 @@ basic_custom:
   _check_fmt: "which {name}"
   nvim:
     # maybe ripgrep/fd
-    __rdepends__: [treesitter_cli, pynvim, minimap, fzf, nvim_packer]
+    __rdepends__: &nvim_rdepends [treesitter_cli, pynvim, minimap, fzf, nvim_packer]
     dir: *tmp_dir
     name: nvim
     cmds:
@@ -177,7 +178,7 @@ basic_custom:
         -DCMAKE_PREFIX_PATH=/usr/lib/llvm-10
         -DLLVM_INCLUDE_DIR=/usr/lib/llvm-10/include
         -DLLVM_BUILD_INCLUDE_DIR=/usr/include/llvm-10/
-      - cmake --build Release
+      - cmake --build Release -- -j 20
       - cd Release
       - sudo make install
   tmux_resurrect:
@@ -210,4 +211,15 @@ basic_custom:
       - cd Bear
       - cmake -DENABLE_UNIT_TESTS=OFF -DENABLE_FUNC_TESTS=OFF $BEAR_SOURCE_DIR
       - make all -j 20
+      - sudo make install
+  nvim_tips:
+    __depends__: *nvim_rdepends
+    dir: *tmp_dir
+    name: nvim
+    conflicts: nvim
+    cmds:
+      - sudo apt install ninja-build gettext libtool libtool-bin cmake g++ pkg-config unzip curl doxygen
+      - git clone https://github.com/neovim/neovim
+      - cd neovim
+      - make CMAKE_BUILD_TYPE=Release -j 20
       - sudo make install

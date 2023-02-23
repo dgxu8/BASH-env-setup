@@ -41,6 +41,10 @@ require("telescope").setup({
       show_all_buffers = true,
       sort_lastused = true,
       theme = "dropdown",
+      layout_config = {
+        width = 0.99,
+        height = 0.5,
+      },
       mappings = {
         i = {
           ["<c-d>"] = "delete_buffer",
@@ -216,7 +220,7 @@ require('lualine').setup {
 -------------------
 require'nvim-treesitter.configs'.setup {
   -- A list of parser names, or "all"
-  ensure_installed = { "c", "cpp", "lua", "rust", "python", "yaml", "cmake" },
+  ensure_installed = { "c", "cpp", "lua", "rust", "python", "yaml", "cmake", "vim" },
 
   -- Install parsers synchronously (only applied to `ensure_installed`)
   sync_install = false,

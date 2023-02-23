@@ -1,13 +1,14 @@
 # BASH-env-setup
 setup scripts for linux bash environments
 
-Install scripts in the following order:
-1. install_base.sh
-2. setup_env.sh
-
-## For WSL run
-- wsl_setup.sh
-
-## Improve wsl ssh performance
+# WSL
+## Improve wsl performance
 In powershell run:
 New-NetFirewallRule -DisplayName "WSL" -Direction Inbound -InterfaceAlias "vEthernet (WSL)" -Action Allow
+
+## Common issues
+### apt broken
+Sometimes the clock may be wrong reset the hwclock with: `sudo hwclock --hctosys`
+
+### treesitter issues
+may need to explicitly install treesitter for language: `:TSUpdate {language}`
