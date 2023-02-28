@@ -4,6 +4,7 @@ alias wcmd="cmd.exe /C"
 alias wusb="cmd.exe /C usbipd wsl"
 alias wusb-list="cmd.exe /C usbipd wsl list"
 alias wusb-attach="cmd.exe /C usbipd wsl attach"
+alias wusb-detach="cmd.exe /C usbipd wsl detach"
 alias wsl-update="cmd.exe /C wsl --update"
 alias explore="explorer.exe ."
 

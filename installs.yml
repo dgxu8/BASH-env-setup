@@ -125,7 +125,7 @@ basic_gh_release:
       - make -j 20
       - sudo make install
   lazygit:
-    _install_fmt: "gh release download -R {repo} -p {package_glob} -o {package_out}"
+    _install_fmt: "gh release download -R {repo} -p {package_glob} -O {package_out}"
     dir: *tmp_dir
     name: lazygit
     repo: jesseduffield/lazygit
