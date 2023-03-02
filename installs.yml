@@ -87,6 +87,7 @@ basic_rust:
   treesitter_cli:
     __depends__: treesitter
     name: tree-sitter-cli
+  delta: git-delta
 
 # All NPM installs are global
 basic_npm:

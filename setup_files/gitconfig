@@ -1,0 +1,18 @@
+[diff]
+	tool = difftastic
+	external = difft
+[difftool]
+	prompt = false
+[difftool "difftastic"]
+	cmd = difft \"$LOCAL\" \"$REMOTE\"
+[color]
+	ui = true
+[core]
+	editor = vim
+[push]
+	default = upstream
+[pager]
+	difftool = true
+[alias]
+	dft = difftool
+	showtool = "!showci () { rev=${1:-HEAD}; git difftool $rev~1 $rev; }; showci $1"

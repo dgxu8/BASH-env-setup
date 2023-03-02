@@ -26,6 +26,7 @@ require("telescope").setup({
       horizontal = {
         width = 0.99,
         height = 0.95,
+        preview_width = {0.33, min = 10},
       },
     },
   },
@@ -35,6 +36,7 @@ require("telescope").setup({
       layout_config = {
         width = 0.99,
         height = 0.5,
+        preview_width = {0.3, min = 10},
       },
     },
     buffers = {
@@ -43,7 +45,7 @@ require("telescope").setup({
       theme = "dropdown",
       layout_config = {
         width = 0.99,
-        height = 0.5,
+        height = 0.7,
       },
       mappings = {
         i = {
