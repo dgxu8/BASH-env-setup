@@ -23,6 +23,9 @@ ln -sf $setup_dir/lazygit_config.yml ~/.config/lazygit/config.yml
 echo "Setting up tmux"
 ln -sf $setup_dir/tmux.conf ~/.tmux.conf
 
+echo "linking pylintrc"
+ln -sf $setup_dir/pylintrc ~/.pylintrc
+
 # Note: We want to install it manually so we can rebind the save to prompt first
 echo "Installing tmux resurrect"
 git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux/tmux-resurrect

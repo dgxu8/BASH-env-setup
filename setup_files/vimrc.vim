@@ -86,7 +86,7 @@ augroup END
 
 "Nerdtree mapping
 nnoremap <silent> <F11> :NERDTreeToggle<CR>
-nnoremap <silent> <C-F11> :NERDTreeFind<CR>
+nnoremap <silent> <F10> :NERDTreeFind<CR>
 
 map <leader>tl :TlistToggle<CR>
 
