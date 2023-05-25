@@ -1,7 +1,11 @@
 os:
-  editCommand: 'vim'
+  editPreset: 'vim'
 
 keybinding:
+  universal:
+    optionMenu: 'x'
+    filteringMenu: '<c-f>'
+
   commits:
     moveDownCommit: 'J'
     moveUpCommit: 'K'
@@ -18,3 +22,9 @@ customCommands:
     command: 'git pushgerrit {{.SelectedLocalCommit.Sha}}'
     context: 'commits'
     loadingText: 'Pushing'
+
+  - key: '<c-s>'
+    description: Sign off last commit
+    context: 'commits'
+    command: 'git commit --amend --signoff'
+    subprocess: true

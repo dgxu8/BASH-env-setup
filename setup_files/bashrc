@@ -171,7 +171,7 @@ stty -ixon
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 # exports
-export PATH=/home/xudennis/nvim-linux64/bin/:$PATH:/home/xudennis/bin/
+export PATH="$HOME"/nvim-linux64/bin/:$PATH:"$HOME"/bin/:"$HOME"/go/bin/
 export FZF_DEFAULT_COMMAND='fd --type f'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export VISUAL=vim
@@ -192,6 +192,9 @@ alias synch="history -a; history -c; history -r;"
 alias ssh="TERM=xterm-256color \ssh"
 
 reboot () { echo 'Reboot? (y/n)' && read x && [[ "$x" == "y" ]] && /sbin/reboot; }
+
+# This adds backslash to symlined directories automatically when tab'ing
+bind 'set mark-symlinked-directories on'
 
 function set-title() {
   if [[ -z "$ORIG" ]]; then
