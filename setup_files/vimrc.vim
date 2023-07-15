@@ -72,10 +72,17 @@ filetype plugin indent on
 
 noremap <leader>n :set relativenumber!<CR>
 
+function! <SID>StripTrailingWhitespaces()
+    let l = line(".")
+    let c = col(".")
+    %s/\s\+$//e
+    call cursor(l, c)
+endfun
+
 augroup vimrc
 autocmd!
     "Remove WS when a buffer is written
-    autocmd BufWritePre * :%s/\s\+$//e
+    autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
 
     " Treat WAF wscript as a python file
     autocmd BufNewFile,BufRead wscript* set filetype=python
