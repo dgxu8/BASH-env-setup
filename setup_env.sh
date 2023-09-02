@@ -26,6 +26,9 @@ ln -sf $setup_dir/tmux.conf ~/.tmux.conf
 echo "linking pylintrc"
 ln -sf $setup_dir/pylintrc ~/.pylintrc
 
+echo "linking atuin config"
+ln -sf $setup_dir/atuin_config.toml ~/.config/atuin/config.toml
+
 # Note: We want to install it manually so we can rebind the save to prompt first
 echo "Installing tmux resurrect"
 git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux/tmux-resurrect

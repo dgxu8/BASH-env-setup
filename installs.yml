@@ -89,6 +89,10 @@ basic_rust:
     __depends__: treesitter
     name: tree-sitter-cli
   delta: git-delta
+  atuin:
+    __depends__: bash-preexec-sh
+    name: atuin
+    description: Better bash history
 
 # All NPM installs are global
 basic_npm:
@@ -225,3 +229,8 @@ basic_custom:
       - cd neovim
       - make CMAKE_BUILD_TYPE=Release -j 20
       - sudo make install
+  bash-preexec-sh:
+    name: bash_preexec
+    cmds:
+      - curl https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh -o ~/.bash-preexec.sh
+      # - echo '[[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh' >> ~/.bashrc
