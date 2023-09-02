@@ -33,11 +33,6 @@ Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 " }}}
 
-"{{{ taglist
-" Uses exuberant ctags.
-"Plug 'vim-scripts/taglist.vim'
-" }}}
-
 " {{{ nerdtree
 " The NERD tree file explorer
 Plug 'scrooloose/nerdtree'
@@ -95,23 +90,9 @@ let g:ale_cache_executable_check_failures = 1
 let g:ale_python_flake8_options = '--max-line-length=88'
 " }}}
 
-" {{{ vim-gutentags
-" A Vim plugin that manages your tag files
-"Plug 'ludovicchabant/vim-gutentags'
-"let g:gutentags_ctags_exclude = [
-"    \ 'build/*',
-"    \ '**.ccls-cache/*'
-"\]
-" }}}
-
 " {{{ scrollbar
 " scrollbar
 Plug 'petertriho/nvim-scrollbar'
-" }}}
-
-" {{{ tagbar
-" tagbar
-"Plug 'majutsushi/tagbar'
 " }}}
 
 " {{{ tig-explorer.vim
@@ -119,10 +100,8 @@ Plug 'petertriho/nvim-scrollbar'
 Plug 'iberianpig/tig-explorer.vim'
 " }}}
 
-" {{{ vim-multiple-cursors
-" Vim plugin to use Tig as a git client.
-Plug 'terryma/vim-multiple-cursors'
-" }}}
+" Non-deprecated multi cursor
+Plug 'mg979/vim-visual-multi'
 
 "Plug 'tweekmonster/startuptime.vim'
 

@@ -103,9 +103,6 @@ map <leader>tl :TlistToggle<CR>
 
 map <C-p> :Files<CR>
 
-" Copy current file path into + register (system paste buffer)
-map <leader>cp :let @+ = expand("%:p")<CR>
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Dennis Custom stuff

@@ -182,7 +182,7 @@ alias lg="lazygit"
 alias bim="nvim"
 alias cim="nvim"
 alias delet="find . -name '*.orig' -delete -print"
-alias copy="rsync -a --no-i-r --info=progress2"
+alias copy="rsync -a -L --no-i-r --info=progress2"
 alias subdate="git submodule update --init --recursive"
 alias fz="fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}'"
 alias synch="history -a; history -c; history -r;"
@@ -192,6 +192,7 @@ alias synch="history -a; history -c; history -r;"
 alias ssh="TERM=xterm-256color \ssh"
 
 reboot () { echo 'Reboot? (y/n)' && read x && [[ "$x" == "y" ]] && /sbin/reboot; }
+poweroff () { echo 'Poweroff? (y/n)' && read x && [[ "$x" == "y" ]] && /sbin/poweroff; }
 
 # This adds backslash to symlined directories automatically when tab'ing
 bind 'set mark-symlinked-directories on'
@@ -218,11 +219,7 @@ function manbat() {
   bat --language manpage $@
 }
 
-function batman() {
-  # Use bat to display man page. aka batman
-  man $@ | manbat --style plain
-}
-alias bman=batman
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
 . "$HOME/.cargo/env"
 export PATH=~/.local/bin:"$PATH"
