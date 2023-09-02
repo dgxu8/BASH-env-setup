@@ -74,6 +74,7 @@ basic_pip:
   pynvim: pynvim
   grip: grip
   tmuxp: tmuxp
+  pylint: pylint
 
 basic_rust:
   _install_fmt: "cargo install {name}"
