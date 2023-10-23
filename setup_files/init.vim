@@ -124,6 +124,7 @@ require("nightfox").setup({
         const = "teal",
         type = "orange.dim",
         func = "#8fe260",
+        operator = "#808080",
       },
     },
   },
