@@ -112,10 +112,10 @@ command GetPath :let @+ = expand("%:p") | echom @+
 
 " folding settings
 set foldenable
-set foldlevelstart=10
-set foldnestmax=10
+set foldlevelstart=99
 set foldmethod=syntax
 set ff=unix
+set foldtext=substitute(getline(v:foldstart),'\\t',repeat('\ ',&tabstop),'g').'\ ...\ '.trim(getline(v:foldend)).'\ ('.(v:foldend-v:foldstart+1).'\ lines)'
 
 set splitbelow
 set splitright

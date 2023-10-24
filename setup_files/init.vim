@@ -333,10 +333,17 @@ cmp.setup {
     { name = 'luasnip' },
   },
 }
+
+vim.o.foldmethod = "expr"
+vim.o.foldexpr = "nvim_treesitter#foldexpr()"
+vim.o.fillchars="fold: "
+vim.o.foldnestmax = 3
+vim.o.foldminlines = 1
+
 EOF
 
-function FoldConfig()
-	set foldmethod=expr
-	set foldexpr=nvim_treesitter#foldexpr()
-endfunction
-autocmd BufAdd,BufEnter,BufNew,BufNewFile,BufWinEnter * :call FoldConfig()
+"function FoldConfig()
+"	set foldmethod=expr
+"	set foldexpr=nvim_treesitter#foldexpr()
+"endfunction
+"autocmd BufAdd,BufEnter,BufNew,BufNewFile,BufWinEnter * :call FoldConfig()
