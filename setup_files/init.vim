@@ -149,9 +149,11 @@ vim.cmd("colorscheme carbonfox")
 ----------------
 -- Setup Lualine
 ----------------
-require('lualine').setup {
+require('lualine').setup({
   options = {
-    theme = 'powerline',
+    theme = 'onedark',
+    section_separators = '',
+    component_separators = '|',
   },
   sections = {
     lualine_a = {'mode'},
@@ -186,7 +188,7 @@ require('lualine').setup {
     lualine_y = {},
     lualine_z = {'tabs'}
   },
-}
+})
 
 
 -------------------
@@ -194,7 +196,7 @@ require('lualine').setup {
 -------------------
 require'nvim-treesitter.configs'.setup {
   -- A list of parser names, or "all"
-  ensure_installed = { "c", "cpp", "lua", "rust", "python", "yaml", "cmake", "vim" },
+  ensure_installed = { "c", "cpp", "lua", "rust", "python", "yaml", "cmake", "vim", "bitbake", "vimdoc" },
 
   -- Install parsers synchronously (only applied to `ensure_installed`)
   sync_install = false,

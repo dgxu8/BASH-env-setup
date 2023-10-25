@@ -147,9 +147,9 @@ basic_custom:
     dir: *tmp_dir
     name: nvim
     cmds:
-      - curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.deb
-      - sudo apt install ./nvim-linux64.deb
-      - nvim --version
+      - curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
+      - chmod u+x nvim.appimage
+      - sudo mv ./nvim.appimage /usr/bin/nvim
   gitprompt:
     _check_fmt: "test -f ~/.git-prompt.sh"
     dir: *tmp_dir

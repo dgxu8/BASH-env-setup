@@ -16,6 +16,11 @@ return require('packer').startup(function(use)
   -- colorscheme
   use "EdenEast/nightfox.nvim"
 
+  -- lualine
+  use {
+    'nvim-lualine/lualine.nvim',
+    requires = { 'nvim-tree/nvim-web-devicons', opt = true }
+  }
   -- lsp stuff
   use 'neovim/nvim-lspconfig' -- Collection of configurations for built-in LSP client
   use 'hrsh7th/nvim-cmp' -- Autocompletion plugin

@@ -56,10 +56,6 @@ Plug 'mileszs/ack.vim'
 Plug 'jlanzarotta/bufexplorer'
 " }}}
 
-" lualine
-Plug 'nvim-lualine/lualine.nvim'
-Plug 'kyazdani42/nvim-web-devicons'
-
 " {{{ vim-esearch
 " NeoVim/Vim plugin performing project-wide async search and replace, similar to SublimeText, Atom et al.
 Plug 'eugen0329/vim-esearch'
