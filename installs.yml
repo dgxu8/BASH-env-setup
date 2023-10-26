@@ -70,24 +70,20 @@ deprecated_apt:
 basic_pip:
   _install_fmt: "pip3 install {name}"
   _check_fmt: "pip3 show {name}"
-  pylsp: python-lsp-server
   pynvim: pynvim
   grip: grip
   tmuxp: tmuxp
   pylint: pylint
+  venv: venv
 
 basic_rust:
   _install_fmt: "cargo install {name}"
   _check_fmt: "cargo install --list | grep -w {name}"
   # We don't lock the installs
   __depends__: rust
-  minimap: code-minimap
   gitui: gitui
   difftastic: difftastic
   exa: exa
-  treesitter_cli:
-    __depends__: treesitter
-    name: tree-sitter-cli
   delta: git-delta
   atuin:
     __depends__: bash-preexec-sh
@@ -143,7 +139,7 @@ basic_custom:
   _check_fmt: "which {name}"
   nvim:
     # maybe ripgrep/fd
-    __rdepends__: &nvim_rdepends [treesitter_cli, pynvim, minimap, fzf, nvim_packer]
+    __rdepends__: &nvim_rdepends [pynvim, fzf, venv, treesitter]
     dir: *tmp_dir
     name: nvim
     cmds:
