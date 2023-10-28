@@ -1,0 +1,21 @@
+[user]
+	email = xudennis8@gmail.com
+	name = Dennis Xu
+[core]
+	editor = vim
+[diff]
+	tool = difftastic
+[difftool]
+	prompt = false
+[difftool "wmeld"]
+	cmd = wmeld \"$(wslpath -aw $LOCAL)\" \"$(wslpath -aw $REMOTE)\"
+[difftool "difftastic"]
+	cmd = difft "$LOCAL" "$REMOTE"
+[merge]
+	tool = wmeld
+[mergetool "wmeld"]
+	cmd = wmeld --auto-merge \"$(wslpath -aw $LOCAL)\" \"$(wslpath -aw $BASE)\" \"$(wslpath -aw $REMOTE)\" --output \"$(wslpath -aw $MERGED)\" --label=Local --label=Base --label=Remote --diff \"$(wslpath -aw $BASE)\" \"$(wslpath -aw $LOCAL)\" --diff \"$(wslpath -aw $BASE)\" \"$(wslpath -aw $REMOTE)\"
+[pager]
+	difftool = true
+[pull]
+	rebase = preserve
