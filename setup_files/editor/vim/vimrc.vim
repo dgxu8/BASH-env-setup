@@ -1,14 +1,3 @@
-
-if !exists('g:loaded_plug')
-so ~/.vim/autoload/plug.vim
-endif
-
-"vim-plug plugins
-so ~/.vim/plugins.vim
-
-"plugins-setup
-so ~/.vim/plugins-setup.vim
-
 "Source local settings if any.
 if filereadable(glob("~/.vim/local-setup.vim"))
     source ~/.vim/local-setup.vim

@@ -3,7 +3,8 @@
 my_path=$1
 
 echo "Symlinking vim files"
-echo "so ~/.vim/vimrc.vim" > "${HOME}/.vimrc"
+echo "so ~/.vim/plugins.vim" > "${HOME}/.vimrc"
+echo "so ~/.vim/vimrc.vim" >> "${HOME}/.vimrc"
 
 mkdir -p ~/.vim/
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim

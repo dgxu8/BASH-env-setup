@@ -1,3 +1,7 @@
+if !exists('g:loaded_plug')
+so ~/.vim/autoload/plug.vim
+endif
+
 " Vim Plug plugins
 call plug#begin('~/.vim/plugged')
 
@@ -119,4 +123,5 @@ endif
 "Add plugins to &runtimepath
 call plug#end()
 
-" vim: set foldmethod=marker:
+"plugins-setup
+so ~/.vim/plugins-setup.vim

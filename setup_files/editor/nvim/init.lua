@@ -1,4 +1,4 @@
-vim.api.nvim_command("source ~/.vimrc")
+vim.api.nvim_command("source ~/.vim/vimrc.vim")
 
 vim.keymap.set("n", "<F9>", "<cmd>split term://bash<cr>")
 vim.keymap.set("t", "<F9>", "<cmd>q<cr>")
