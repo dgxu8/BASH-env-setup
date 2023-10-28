@@ -69,7 +69,11 @@ end
 plugin.keys = {
     {"<c-p>", "<cmd>Telescope find_files<cr>"},
     {"<F4>", "<cmd>Telescope buffers<cr>"},
-    {"<leader>fw", "<cmd>Telescope live_grep<cr>", mode = "n"},
+    {"<leader>?", "<cmd>Telescope live_grep<cr>"},
+    {"<leader>fw", function()
+        local text = vim.fn.expand("<cword>")
+        require("telescope.builtin").live_grep({default_text = text})
+    end, mode = "n"},
     {"<leader>fw", function()
         local text = vim.getVisualSelection()
         require("telescope.builtin").live_grep({default_text = text})

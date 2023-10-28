@@ -10,17 +10,6 @@ call plug#begin('~/.vim/plugged')
 "set rtp+=~/.fzf
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-"Plug 'yuki-yano/fzf-preview.vim', { 'branch': 'release/rpc' }
-"Plug '~/.fzf'
-  " Both options are optional. You don't have to install fzf in ~/.fzf
-  " and you don't have to run install script if you use fzf only in Vim.
-" }}}
-
-" {{{ vim-go
-"This plugin adds Go language support for Vim
-Plug 'fatih/vim-go'
-let g:go_version_warning = 0
-" }}}
 
 " {{{ vim-bitbake
 "BitBake syntax highlighter
@@ -48,12 +37,6 @@ Plug 'mhartington/oceanic-next'
 " {{{ Vim Linux Coding Style
 Plug 'vivien/vim-linux-coding-style'
 let g:linuxsty_patterns = [ "/projects/platforms/linux/ti/glsdk/kernel" ]
-" }}}
-
-" {{{ ack.vim
-" Vim plugin for the Perl module / CLI script 'ack'
-" Can also be used with ag.
-Plug 'mileszs/ack.vim'
 " }}}
 
 " {{{ bufexplorer
@@ -90,11 +73,6 @@ let g:ale_cache_executable_check_failures = 1
 let g:ale_python_flake8_options = '--max-line-length=88'
 " }}}
 
-" {{{ scrollbar
-" scrollbar
-Plug 'petertriho/nvim-scrollbar'
-" }}}
-
 " {{{ tig-explorer.vim
 " Vim plugin to use Tig as a git client.
 Plug 'iberianpig/tig-explorer.vim'
@@ -104,21 +82,6 @@ Plug 'iberianpig/tig-explorer.vim'
 Plug 'mg979/vim-visual-multi'
 
 "Plug 'tweekmonster/startuptime.vim'
-
-if has('nvim')
-    " autocomplete logic stuff lsp
-    Plug 'neovim/nvim-lspconfig'
-    Plug 'hrsh7th/cmp-nvim-lsp'
-    Plug 'hrsh7th/cmp-buffer'
-    Plug 'hrsh7th/cmp-path'
-    Plug 'hrsh7th/cmp-cmdline'
-    Plug 'hrsh7th/nvim-cmp'
-
-    Plug 'saadparwaiz1/cmp_luasnip'
-    Plug 'L3MON4D3/LuaSnip'
-
-    Plug 'onsails/lspkind-nvim'
-endif
 
 "Add plugins to &runtimepath
 call plug#end()

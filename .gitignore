@@ -1,1 +1,3 @@
 tags
+setup_files/editor/nvim/lua/.luarc.json
+setup_files/editor/nvim/lazy-lock.json

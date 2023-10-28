@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import shutil
 import subprocess
 
 from copy import deepcopy
@@ -356,6 +357,12 @@ def build_dependency_dict() -> Dict[str, PackageNode]:
     """Parse insalls yaml and build package dependency dict"""
     with open(INSTALLS_FILE, "r") as stream:
         installs = yaml.load(stream, Loader=Loader)
+
+    # Delete tmp dir
+    tmp_dir = os.path.expanduser(installs["_dirs_aliases"][0])
+    if os.path.exists(tmp_dir):
+        print(f"Deleteing previous tmp dir: {tmp_dir}")
+        shutil.rmtree(tmp_dir)
 
     # archetype
     pkg_dict: dict = dict()
