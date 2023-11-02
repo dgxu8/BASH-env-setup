@@ -11,13 +11,13 @@ plugin.dependencies = {
 
 plugin.opts = {
     -- A list of parser names, or "all"
-    ensure_installed = { "c", "cpp", "lua", "rust", "python", "yaml", "cmake", "vim", "bitbake", "vimdoc" },
+    ensure_installed = { "c", "cpp", "lua", "rust", "python", "yaml", "cmake", "vim", "vimdoc" },
 
     -- Install parsers synchronously (only applied to `ensure_installed`)
     sync_install = false,
 
     -- Automatically install missing parsers when entering buffer
-    auto_install = true,
+    auto_install = false,
 
     highlight = {
         -- `false` will disable the whole extension

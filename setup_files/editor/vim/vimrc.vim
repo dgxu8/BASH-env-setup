@@ -109,9 +109,6 @@ set foldtext=substitute(getline(v:foldstart),'\\t',repeat('\ ',&tabstop),'g').'\
 set splitbelow
 set splitright
 
-" Use spaces instead of tabs
-set expandtab shiftwidth=2 tabstop=2
-
 " Auto set to mouse mode
 set mouse=a
 

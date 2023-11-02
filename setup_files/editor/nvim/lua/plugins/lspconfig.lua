@@ -42,6 +42,16 @@ function plugin.config()
                     flags = {
                         allow_incremenetal_sync = false
                     },
+                    settings = {
+                        pylsp = {
+                            plugins = {
+                                pylint = {enabled = true},
+                                jedi = {
+                                    environment = "/usr/bin/python3"
+                                },
+                            },
+                        },
+                    },
                 })
             end,
             ["lua_ls"] = function()

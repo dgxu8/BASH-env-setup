@@ -6,6 +6,7 @@ local plugins = {
     {"tpope/vim-surround"},
     {"kyazdani42/nvim-web-devicons", lazy = true},
     {"christoomey/vim-tmux-navigator"},
+    {"kergoth/vim-bitbake"},
 }
 
 -- vim visual multi color mode
