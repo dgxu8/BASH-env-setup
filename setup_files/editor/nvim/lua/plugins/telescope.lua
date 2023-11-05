@@ -18,6 +18,11 @@ plugin.opts = {
                 preview_width = {0.33, min = 10},
             },
         },
+        mappings = {
+            i = {
+                ["<F2>"] = "close",
+            },
+        },
     },
     pickers = {
         live_grep = {
@@ -38,7 +43,22 @@ plugin.opts = {
             },
             mappings = {
                 i = {
+                    ["<F4>"] = "close",
                     ["<c-d>"] = "delete_buffer",
+                },
+            },
+        },
+        lsp_document_symbols = {
+            theme = "dropdown",
+            show_line = true,
+            symbols = {"function", "struct"},
+            layout_config = {
+                width = 0.9,
+                height = 0.6,
+            },
+            mappings = {
+                i = {
+                    ["<F8>"] = "close",
                 },
             },
         },
@@ -68,7 +88,9 @@ end
 
 plugin.keys = {
     {"<c-p>", "<cmd>Telescope find_files<cr>"},
+    {"<F2>", "<cmd>Telescope resume<cr>"},
     {"<F4>", "<cmd>Telescope buffers<cr>"},
+    {"<F8>", "<cmd>Telescope lsp_document_symbols<cr>"},
     {"<leader>?", "<cmd>Telescope live_grep<cr>"},
     {"<leader>fw", function()
         local text = vim.fn.expand("<cword>")

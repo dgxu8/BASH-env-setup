@@ -4,6 +4,7 @@ local user = {}
 plugin.dependencies = {
     {"hrsh7th/cmp-nvim-lsp"},
     {"williamboman/mason-lspconfig.nvim"},
+    {"p00f/clangd_extensions.nvim"},
 }
 
 plugin.cmd = {"LspInfo", "LspInstall", "LspUnInstall"}
@@ -37,6 +38,11 @@ function plugin.config()
             function(server)
                 lspconfig[server].setup({})
             end,
+            ["clangd"] = function()
+                lspconfig.clangd.setup({
+                    cmd = {"clangd", "--function-arg-placeholders=0"},
+                })
+            end,
             ["pylsp"] = function()
                 lspconfig.pylsp.setup({
                     flags = {
@@ -47,8 +53,11 @@ function plugin.config()
                             plugins = {
                                 pylint = {enabled = true},
                                 jedi = {
-                                    environment = "/usr/bin/python3"
+                                    environment = "/usr/bin/python3",
+                                    auto_import_modules = {},
                                 },
+                                mccabe = {enabled = false},
+                                yapf = {enabled = false},
                             },
                         },
                     },
@@ -96,6 +105,9 @@ function user.on_attach()
     bufmap("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<cr>")
     bufmap("n", "gr", "<cmd>lua vim.lsp.buf.references()<cr>")
     bufmap("n", "<space>rn", "<cmd>lua vim.lsp.buf.rename()<cr>")
+
+    require("clangd_extensions.inlay_hints").setup_autocmd()
+    require("clangd_extensions.inlay_hints").set_inlay_hints()
 end
 
 return plugin

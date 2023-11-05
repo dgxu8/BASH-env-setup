@@ -80,12 +80,6 @@ autocmd!
     autocmd FileType hog set filetype=udevrules
 augroup END
 
-"Nerdtree mapping
-nnoremap <silent> <F11> :NERDTreeToggle<CR>
-nnoremap <silent> <F10> :NERDTreeFind<CR>
-
-map <leader>tl :TlistToggle<CR>
-
 "map <F12> :buffers<BAR>
 "           \let i = input("Buffer number: ")<BAR>
 "           \execute "buffer " . i<CR>
@@ -129,9 +123,6 @@ inoremap <silent> <C-S>         <C-O>:update<CR>
 
 " Search selection with //
 vnoremap // y/\V<C-R>=escape(@",'/\')<CR><CR>
-
-" map tagbar toggle to F8
-nmap <F8> :TagbarToggle<CR>
 
 " map F4 to buffer explore
 nmap <F4> :ToggleBufExplorer<CR>

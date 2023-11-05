@@ -13,6 +13,9 @@ plugin.dependencies = {
     -- Snippets
     {"L3MON4D3/LuaSnip"},
     {"rafamadriz/friendly-snippets"},
+
+    -- Completion scores
+    {"p00f/clangd_extensions.nvim"}
 }
 
 plugin.event = "InsertEnter"
@@ -92,6 +95,18 @@ function plugin.config()
                 luasnip.lsp_expand(args.body)
             end
         },
+        sorting = {
+            comparators = {
+                cmp.config.compare.offset,
+                cmp.config.compare.exact,
+                cmp.config.compare.recently_used,
+                require("clangd_extensions.cmp_scores"),
+                cmp.config.compare.kind,
+                cmp.config.compare.sort_text,
+                cmp.config.compare.length,
+                cmp.config.compare.order,
+            },
+        },
         sources = {
             {name = "path"},
             {name = "nvim_lsp"},
@@ -129,6 +144,40 @@ function plugin.config()
             end,
         },
     })
+
+    local bufIsBig = function(bufnr)
+        local max_filesize = 200 * 1024 -- 200 KB
+        local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(bufnr))
+        if ok and stats and stats.size > max_filesize then
+            return true
+        else
+            return false
+        end
+    end
+
+    -- default sources for all buffers
+    local default_cmp_sources = cmp.config.sources({
+        { name = 'nvim_lsp' },
+        { name = 'nvim_lsp_signature_help' },
+    }, {
+        { name = 'vsnip' },
+        { name = 'path' }
+    })
+
+    -- If a file is too large, I don't want to add to it's cmp sources treesitter, see:
+    -- https://github.com/hrsh7th/nvim-cmp/issues/1522
+    vim.api.nvim_create_autocmd('BufReadPre', {
+        callback = function(t)
+            local sources = default_cmp_sources
+            if not bufIsBig(t.buf) then
+                sources[#sources+1] = {name = 'treesitter', group_index = 2}
+            end
+            cmp.setup.buffer {
+                sources = sources
+            }
+        end
+    })
+
 end
 
 return plugin

@@ -30,6 +30,9 @@ let g:esearch#util#trunc_omission = '|'
 
 " vim: set foldmethod=marker:
 
+"Nerdtree mapping
+nnoremap <silent> <F11> :NERDTreeToggle<CR>
+
 " Setup oceanic-next colorscheme
 if (has("termguicolors"))
   set termguicolors

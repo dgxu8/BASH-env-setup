@@ -17,7 +17,6 @@ plugin.opts = {
 }
 
 plugin.keys = {
-  {"<F10>", "<cmd>NvimTreeToggle<cr>"},
   {"<F11>", "<cmd>NvimTreeFindFileToggle<cr>"},
 }
 
