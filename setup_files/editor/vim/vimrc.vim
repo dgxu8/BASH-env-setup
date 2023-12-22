@@ -144,6 +144,9 @@ if &term =~ '256color'
         set t_ut=
 endif
 
+" override * so it doesn't jump to the new selection. Taken from: https://stackoverflow.com/a/49944815
+nnoremap <silent> * :let @/= '\<' . expand('<cword>') . '\>' <bar> set hls <cr>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Moving around, tabs, windows and buffers
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

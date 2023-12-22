@@ -39,7 +39,7 @@ plugin.opts = {
             theme = "dropdown",
             layout_config = {
                 width = 0.99,
-                height = 0.7,
+                height = 0.5,
             },
             mappings = {
                 i = {
@@ -58,7 +58,7 @@ plugin.opts = {
             },
             mappings = {
                 i = {
-                    ["<F8>"] = "close",
+                    ["<F3>"] = "close",
                 },
             },
         },
@@ -89,8 +89,8 @@ end
 plugin.keys = {
     {"<c-p>", "<cmd>Telescope find_files<cr>"},
     {"<F2>", "<cmd>Telescope resume<cr>"},
+    {"<F3>", "<cmd>Telescope lsp_document_symbols<cr>"},
     {"<F4>", "<cmd>Telescope buffers<cr>"},
-    {"<F8>", "<cmd>Telescope lsp_document_symbols<cr>"},
     {"<leader>?", "<cmd>Telescope live_grep<cr>"},
     {"<leader>fw", function()
         local text = vim.fn.expand("<cword>")

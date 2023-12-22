@@ -19,6 +19,7 @@
 Closed `]`, `}`, and `)` for no spaces
 - `cs'"` Changes `'` to `"`
 - `ysiw}` Adds "{}" around word
+- `tss"` Surrounds a line with `"`
 
 ## Vim multi
 - `<C-N>` select words

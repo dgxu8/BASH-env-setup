@@ -182,7 +182,7 @@ alias lg="lazygit"
 alias bim="nvim"
 alias cim="nvim"
 alias delet="find . -name '*.orig' -delete -print"
-alias copy="rsync -a -L --no-i-r --info=progress2"
+alias copy="rsync -a -L --info=progress2"
 alias subdate="git submodule update --init --recursive"
 alias fz="fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}'"
 alias synch="history -a; history -c; history -r;"
@@ -217,6 +217,10 @@ function git-sha() {
 
 function manbat() {
   bat --language manpage $@
+}
+
+function gitgraph() {
+    git graph --color=always --model=simple --style=round --wrap=none $@ | less -R
 }
 
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
