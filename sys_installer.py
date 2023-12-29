@@ -9,14 +9,18 @@ import subprocess
 
 from copy import deepcopy
 from pathlib import Path
-from typing import List, Dict, Optional, Union, Set
+from typing import List, Dict, Union, Set
 
 from prompt_toolkit import prompt
-from prompt_toolkit.formatted_text import FormattedText
-from prompt_toolkit.completion import Completer, NestedCompleter, FuzzyCompleter, Completion, WordCompleter
+from prompt_toolkit.completion import (
+    NestedCompleter,
+    FuzzyCompleter,
+    WordCompleter,
+)
 
 # Yaml imports
 import yaml
+
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
@@ -30,10 +34,11 @@ RDEPENDS_ATTR_KEY = "__rdepends__"
 INSTALL_ATTR_KEY = "_install_fmt"
 CHECK_ATTR_KEY = "_check_fmt"
 
+
 class NodeAttributes:
     def __init__(self, pkg_info: Union[dict, str]):
-        self.depends: List[str] = list()
-        self.rdepends: List[str] = list()
+        self.depends: List[str] = []
+        self.rdepends: List[str] = []
         self.install_fmt = None
         self.check_fmt = None
         if isinstance(pkg_info, dict):
@@ -60,7 +65,9 @@ class NodeAttributes:
 
 
 class PackageNode:
-    def __init__(self, key_name: str, pkg_info: Union[dict, str], parent_attr: NodeAttributes):
+    def __init__(
+        self, key_name: str, pkg_info: Union[dict, str], parent_attr: NodeAttributes
+    ):
         self.is_installed = False
         self._key_name = key_name
         self.install_cmd = None
@@ -85,7 +92,9 @@ class PackageNode:
             raise
 
         self.name = pkg_info.get("name", None)
-        self.wrk_dir = os.path.expanduser(pkg_info["dir"]) if "dir" in pkg_info else None
+        self.wrk_dir = (
+            os.path.expanduser(pkg_info["dir"]) if "dir" in pkg_info else None
+        )
         self.pre_cmds = listify_element(pkg_info, "pre_cmds")
         self.cmds = listify_element(pkg_info, "cmds")
 
@@ -170,7 +179,9 @@ class PackageNode:
 
 class LocalStateHandler:
     def __init__(self):
-        self.install_yml = Path(os.path.expanduser("~/.local/state/pkg_env/installed.yml"))
+        self.install_yml = Path(
+            os.path.expanduser("~/.local/state/pkg_env/installed.yml")
+        )
         self.install_yml.parent.mkdir(parents=True, exist_ok=True)
 
         self.installed_list = self._read_yaml()
@@ -281,11 +292,12 @@ class PackageManager:
             diff = old_list - set(self.local_state.installed_list)
             print(f"Removed {diff}")
 
-    def update_pkg_dict(self,
-                        adds: List[str] = [],
-                        removes: List[str] = [],
-                        quiet: bool = False,
-                        ):
+    def update_pkg_dict(
+        self,
+        adds: List[str] = [],
+        removes: List[str] = [],
+        quiet: bool = False,
+    ):
         if len(adds) > 0:
             self.local_state.add_pkgs(adds, quiet)
             for pkg in adds:
@@ -302,7 +314,7 @@ class PackageManager:
 class PackageCompleter(NestedCompleter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.packages: Dict[str, List[str]] = dict()
+        self.packages: Dict[str, List[str]] = {}
 
     def add_list_cmd(self, cmd):
         self.get_list = cmd
@@ -315,9 +327,8 @@ class PackageCompleter(NestedCompleter):
 
         if len(document.text.split()) > 0:
             text = document.text
-            for command in self.packages:
+            for command, list_cmd in self.packages.items():
                 if text.startswith(command):
-                    list_cmd = self.packages[command]
                     cmp = WordCompleter(self.get_list(list_cmd))
                     yield from cmp.get_completions(document, complete_event)
 
@@ -342,7 +353,7 @@ def parse_category(packages: dict) -> dict:
     """Parse packge descriptions"""
 
     # Get archetype attributes
-    pkg_dict: dict = dict()
+    pkg_dict: dict = {}
     arch_attr = NodeAttributes(packages)
     for key, value in packages.items():
         if key[0] == "_":
@@ -365,7 +376,7 @@ def build_dependency_dict() -> Dict[str, PackageNode]:
         shutil.rmtree(tmp_dir)
 
     # archetype
-    pkg_dict: dict = dict()
+    pkg_dict: dict = {}
     for archetype, packages in installs.items():
         if archetype[0] == "_":
             continue
@@ -392,7 +403,13 @@ The following are only used to manipulate the yaml file that tracks the installe
 def main():
     """Main Entry Point"""
     parser = argparse.ArgumentParser("Package Installer")
-    parser.add_argument("-l", "--list", choices=["all", "curr", "new"], default=None, help="List packages")
+    parser.add_argument(
+        "-l",
+        "--list",
+        choices=["all", "curr", "new"],
+        default=None,
+        help="List packages",
+    )
     args = parser.parse_args()
 
     pkg = PackageManager()
@@ -428,7 +445,9 @@ def main():
 
     try:
         while True:
-            cmd = prompt("Enter command: ", completer=FuzzyCompleter(completer))#, complete_in_thread=True)
+            cmd = prompt(
+                "Enter command: ", completer=FuzzyCompleter(completer)
+            )  # , complete_in_thread=True)
             if cmd in ["exit", "stop", "quit"]:
                 break
             print(f"Got: {cmd}\n")
