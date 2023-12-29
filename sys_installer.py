@@ -7,6 +7,7 @@ import os
 import shutil
 import subprocess
 
+from glob import glob
 from copy import deepcopy
 from pathlib import Path
 from typing import List, Dict, Union, Set
@@ -123,6 +124,7 @@ class PackageNode:
             if cmd_list[0] == "cd":
                 assert len(cmd_list) == 2, f"Too many arguments for cd command: {cmd}"
                 dest = os.path.expanduser(cmd_list[1])
+                dest = glob(dest)[0]
                 print(f"cd'ing to {dest}")
                 os.chdir(dest)
             else:
