@@ -55,6 +55,7 @@ basic_apt:
       - sudo apt-get install -y nodejs
     name: nodejs
   vim: vim
+  venv: python3.8-venv
 
 wsl_apt:
   _install_fmt: "sudo apt install {name}"
@@ -75,7 +76,6 @@ basic_pip:
   grip: grip
   tmuxp: tmuxp
   pylint: pylint
-  venv: venv
 
 basic_rust:
   _install_fmt: "cargo install {name}"
@@ -164,28 +164,10 @@ basic_custom:
     cmds:
       - git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
       - ~/.fzf/install
-  nvim_packer:
-    _check_fmt: "test -d ~/.local/share/nvim/site/pack/packer/start/packer.nvim/"
-    cmds: git clone --depth 1 https://github.com/wbthomason/packer.nvim
-          ~/.local/share/nvim/site/pack/packer/start/packer.nvim
   tpm:
     _check_fmt: "test -d ~/.tmux/plugins/tpm"
     description: TMUX plugin manager
     cmds: git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-  ccls:
-    __depends__: [clang, libclang]
-    dir: *tmp_dir
-    name: ccls
-    cmds:
-      - git clone --depth=1 --recursive https://github.com/MaskRay/ccls
-      - cd ccls
-      - cmake -H. -BRelease -DCMAKE_BUILD_TYPE=Release
-        -DCMAKE_PREFIX_PATH=/usr/lib/llvm-10
-        -DLLVM_INCLUDE_DIR=/usr/lib/llvm-10/include
-        -DLLVM_BUILD_INCLUDE_DIR=/usr/include/llvm-10/
-      - cmake --build Release -- -j 20
-      - cd Release
-      - sudo make install
   tmux_resurrect:
     _check_fmt: "test -d ~/.tmux/tmux-resurrect"
     cmds: git clone https://github.com/tmux-plugins/tmux-resurrect
