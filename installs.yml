@@ -51,8 +51,9 @@ basic_apt:
   npm:
     __depends__: curl
     pre_cmds:
-      - curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
-      - sudo apt-get install -y nodejs
+      - curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+      - echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+      - sudo apt update
     name: nodejs
   vim: vim
   venv: python3.8-venv

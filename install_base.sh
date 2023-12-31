@@ -6,6 +6,10 @@ echo ""
 echo "=== Updating apt ==="
 sudo apt update
 sudo apt upgrade
+sudo apt install ca-certificates curl gnupg
+
+# Needed for gpg installs (like nodejs)
+sudo mkdir -m 0755 -p /etc/apt/keyrings/
 
 echo ""
 echo "=== Installing pip ==="
