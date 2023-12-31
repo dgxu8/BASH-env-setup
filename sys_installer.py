@@ -36,6 +36,10 @@ INSTALL_ATTR_KEY = "_install_fmt"
 CHECK_ATTR_KEY = "_check_fmt"
 
 
+class InstallFailedError(Exception):
+    pass
+
+
 class NodeAttributes:
     def __init__(self, pkg_info: Union[dict, str]):
         self.depends: List[str] = []
@@ -140,11 +144,11 @@ class PackageNode:
             return []
 
         print(f"\nInstalling {self._key_name}")
-        new_pkgs = [self._key_name]
+        new_pkgs = []
 
         # Install all depends
         for pkg in self.attr.depends:
-            new_pkgs += pkg_dict[pkg].install(pkg_dict)
+            new_pkgs += (pkg_dict[pkg].install(pkg_dict))
 
         if self.wrk_dir is not None:
             if not os.path.exists(self.wrk_dir):
@@ -166,10 +170,14 @@ class PackageNode:
                 print("Running commands")
                 self._run_cmds(self.cmds)
 
-        except subprocess.CalledProcessError:
+        except subprocess.CalledProcessError as e:
             print(f"\n===Failed to install {self._key_name}===")
             print(str(self), end="\n\n")
-            raise
+            raise InstallFailedError(
+                f"Failed to install {self._key_name}", new_pkgs
+            ) from e
+
+        new_pkgs.append(self._key_name)
 
         # Install RDEPENDS
         for pkg in self.attr.rdepends:
@@ -198,6 +206,9 @@ class LocalStateHandler:
 
     def add_pkgs(self, pkgs: List[str], quiet: bool = False):
         """Update yaml with newly installed packages"""
+        if len(pkgs) == 0:
+            return
+
         if not quiet:
             for pkg in filter(lambda x: x in self.installed_list, pkgs):
                 print(f"{pkg} is already in yaml")
@@ -281,7 +292,13 @@ class PackageManager:
     def cmd_install(self, pkgs: List[str]):
         for pkg in pkgs:
             assert pkg in self.pkg_dict, f'"{pkg}" is not a valid package'
-            self.local_state.add_pkgs(self.pkg_dict[pkg].install(self.pkg_dict))
+            installed = []
+            try:
+                installed = self.pkg_dict[pkg].install(self.pkg_dict)
+            except InstallFailedError as err:
+                installed = err.args[1]
+            finally:
+                self.local_state.add_pkgs(installed)
 
     def cmd_update(self, cmd, pkgs: List[str]):
         old_list = set(self.local_state.installed_list)
