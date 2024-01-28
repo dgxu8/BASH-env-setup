@@ -9,4 +9,10 @@ function plugin.config()
     })
 end
 
+plugin.keys = {
+    {"<c-k>", function()
+        require("lsp_signature").toggle_float_win()
+    end, mode = "i"},
+}
+
 return plugin
