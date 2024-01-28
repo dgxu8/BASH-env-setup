@@ -1,6 +1,5 @@
 local plugins = {
     {"tpope/vim-fugitive"},
-    {"airblade/vim-gitgutter"},
     {"petertriho/nvim-scrollbar", config = true},
     {"mg979/vim-visual-multi"},
     {"tpope/vim-surround"},
