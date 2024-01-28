@@ -7,7 +7,7 @@ local plugins = {
     {"kyazdani42/nvim-web-devicons", lazy = true},
     {"christoomey/vim-tmux-navigator"},
     {"kergoth/vim-bitbake"},
-    {"folke/neodev.nvim", opts = {}}
+    {"folke/neodev.nvim", opts = {}},
 }
 
 -- vim visual multi color mode

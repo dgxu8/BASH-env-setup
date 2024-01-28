@@ -31,8 +31,10 @@ function plugin.config()
     require("mason-lspconfig").setup({
         ensure_installed = {
             "clangd",
-            "pylsp", -- Need to install python venv
+            "pylsp",
+            "ruff_lsp",
             "lua_ls",
+            "marksman",
         },
         handlers = {
             function(server)
