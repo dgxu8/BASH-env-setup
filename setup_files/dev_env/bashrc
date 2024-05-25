@@ -231,13 +231,7 @@ export PATH=~/.local/bin:"$PATH"
 # source bash-preexec
 [[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh
 
-# setup Atuin (requires bash-preexec)
-_atuin_fix_echo() {
-    stty echo
-    stty sane
-}
 eval "$(atuin init bash --disable-up-arrow)"
-precmd_functions+=(_atuin_fix_echo)
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
