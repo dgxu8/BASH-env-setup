@@ -177,6 +177,10 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export VISUAL=vim
 export EDITOR="$VISUAL"
 
+# deno, JS thing for peek.nvim (markdown viewer)
+export DENO_INSTALL="/home/xudennis/.deno"
+export PATH="$DENO_INSTALL/bin:$PATH"
+
 # alii
 alias lg="lazygit"
 alias bim="nvim"

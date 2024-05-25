@@ -143,7 +143,7 @@ basic_custom:
   _check_fmt: "which {name}"
   nvim:
     # maybe ripgrep/fd
-    __rdepends__: &nvim_rdepends [pynvim, fzf, venv, treesitter]
+    __rdepends__: &nvim_rdepends [pynvim, fzf, venv, treesitter, deno]
     dir: *tmp_dir
     name: nvim
     cmds:
@@ -216,3 +216,8 @@ basic_custom:
     cmds:
       - curl https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh -o ~/.bash-preexec.sh
       # - echo '[[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh' >> ~/.bashrc
+
+  deno:
+    name: deno
+    description: Some JS thing that is needed for peek.nvim (markdown previewer)
+    cmds: curl -fsSL https://deno.land/install.sh | sh
