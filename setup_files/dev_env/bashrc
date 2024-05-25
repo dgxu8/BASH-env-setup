@@ -160,6 +160,9 @@ if ! shopt -oq posix; then
   fi
 fi
 
+# Source task auto complete as well
+. ~/.task_autocomplete
+
 # Source local bash rc file if available
 if [ -f ~/.localrc ]; then
   . ~/.localrc
