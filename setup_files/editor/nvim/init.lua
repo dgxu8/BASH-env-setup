@@ -7,6 +7,7 @@ vim.keymap.set("t", "<ESC>", "<c-\\><c-n>")
 vim.o.fillchars="fold: "
 vim.o.foldnestmax = 3
 vim.o.foldminlines = 1
+vim.o.jumpoptions = "stack"
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then

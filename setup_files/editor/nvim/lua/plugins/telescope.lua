@@ -91,6 +91,7 @@ plugin.keys = {
     {"<F2>", "<cmd>Telescope resume<cr>"},
     {"<F3>", "<cmd>Telescope lsp_document_symbols<cr>"},
     {"<F4>", "<cmd>Telescope buffers<cr>"},
+    {"gr", "<cmd>Telescope lsp_references<cr>"},
     {"<leader>?", "<cmd>Telescope live_grep<cr>"},
     {"<leader>fw", function()
         local text = vim.fn.expand("<cword>")

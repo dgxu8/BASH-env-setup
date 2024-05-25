@@ -39,3 +39,10 @@ Closed `]`, `}`, and `)` for no spaces
 - `<C-f>` cmp.mapping.scroll_docs(4)
 - `<C-Space>` cmp.mapping.complete()
 - `<C-e>` cmp.mapping.abort()
+
+# comment.nvim
+- `gcc` comment current line
+- `gcA` Add comment at end of line
+- `gco` comment on line below
+- visual mode`gc` comment block
+- visual mode`gb` comment block w/ block style comment
