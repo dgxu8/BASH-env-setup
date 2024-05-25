@@ -9,6 +9,9 @@ git:
     pager: delta -n --dark --paging=never
     #externalDiffCommand: difft --color=always --display=inline
 
+gui:
+  nerdFontsVersion: "3"
+
 keybinding:
   universal:
     optionMenu: 'x'
@@ -17,6 +20,7 @@ keybinding:
   commits:
     moveDownCommit: 'J'
     moveUpCommit: 'K'
+    openLogMenu: <c-/>
 
 customCommands:
   - key: 'E'
