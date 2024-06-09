@@ -11,3 +11,6 @@ ln -sfv "${my_path}/atuin_config.toml" "${HOME}/.config/atuin/config.toml"
 
 echo "Symlinking tmux"
 ln -sfv "${my_path}/tmux.conf" "${HOME}/.tmux.conf"
+
+echo "Creating wezterm symlink"
+ln -sfvd $my_path/wezterm "${HOME}/.config/"
