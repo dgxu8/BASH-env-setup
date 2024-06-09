@@ -13,36 +13,31 @@ config.font_size = 11.5
 config.enable_scroll_bar = true
 config.scrollback_lines = 100000
 
--- Pull in keybind helpers
-local vim_shared = require 'vim_bind_helper'
-
 local act = wezterm.action
-config.leader = { key = "a", mods = 'CTRL'}
 config.keys = {
-    {
-        key  = '-',
-        mods = 'LEADER',
-        action = act{SplitVertical={domain='CurrentPaneDomain'}},
-    },
-    {
-        key  = '|',
-        mods = 'LEADER|SHIFT',
-        action = act{SplitHorizontal={domain='CurrentPaneDomain'}},
-    },
-    {
-        key = '[',
-        mods = 'LEADER',
-        action = act.ActivateCopyMode,
-    },
+    -- Disable: Hide
+    {key  = 'm', mods = 'SUPER', action = act.DisableDefaultAssignment},
+
+    -- Disable: ToggleFullScreen
+    {key  = 'Enter', mods = 'ALT', action = act.DisableDefaultAssignment},
+
+    -- Disable: DecreaseFontSize
+    {key  = '-', mods = 'SUPER', action = act.DisableDefaultAssignment},
+    {key  = '-', mods = 'CTRL', action = act.DisableDefaultAssignment},
+
+    -- Disable: IncreaseFontSize
+    {key  = '=', mods = 'SUPER', action = act.DisableDefaultAssignment},
+    {key  = '=', mods = 'CTRL', action = act.DisableDefaultAssignment},
+
+    -- Disable: ResetFontSize
+    {key  = '0', mods = 'SUPER', action = act.DisableDefaultAssignment},
+    {key  = '0', mods = 'CTRL', action = act.DisableDefaultAssignment},
+
+    -- Disable: CloseCurrentTab{confirm=true}
+    {key  = 'w', mods = 'SUPER', action = act.DisableDefaultAssignment},
 }
 
-table.insert(config.keys, vim_shared('h', 'CTRL', act.ActivatePaneDirection('Left')))
-table.insert(config.keys, vim_shared('j', 'CTRL', act.ActivatePaneDirection('Down')))
-table.insert(config.keys, vim_shared('l', 'CTRL', act.ActivatePaneDirection('Right')))
-table.insert(config.keys, vim_shared('k', 'CTRL', act.ActivatePaneDirection('Up')))
-table.insert(config.keys, vim_shared('PageUp', '', act.ScrollByPage(-0.9)))
-table.insert(config.keys, vim_shared('PageDown', '', act.ScrollByPage(0.9)))
-
+-- Rebind ActivateTab
 for i = 1, 8 do
     table.insert(config.keys, {
         key = tostring(i),
