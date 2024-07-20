@@ -22,7 +22,7 @@ plugin.dependencies = {
 
 plugin.opts = {
     -- A list of parser names, or "all"
-    ensure_installed = { "c", "cpp", "lua", "rust", "python", "yaml", "cmake", "vim", "vimdoc", "markdown", "markdown_inline", "rst" },
+    ensure_installed = { "c", "cpp", "lua", "rust", "python", "yaml", "cmake", "vim", "vimdoc", "markdown", "markdown_inline", "rst", "udev" },
 
     -- Install parsers synchronously (only applied to `ensure_installed`)
     sync_install = false,

@@ -47,7 +47,7 @@ set wildmenu        " Show the completion menu
 set wildmode=list:longest "A list of completions will be shown and the command
                           "will be completed to the longest common command.
 
-set listchars=eol:¬,tab:\|\ ,trail:~,extends:>,precedes:<
+set listchars=eol:¬,tab:\|\ ,trail:~,extends:>,precedes:<,nbsp:+
 set list
 
 set relativenumber
@@ -102,6 +102,15 @@ set foldtext=substitute(getline(v:foldstart),'\\t',repeat('\ ',&tabstop),'g').'\
 
 set splitbelow
 set splitright
+
+set scrolloff=1  " Always show a line above/below cursor
+
+" Same as above but from side to side
+set sidescroll=1
+set sidescrolloff=2
+
+" For better scrolling on long blocks when we are wrapping text
+set smoothscroll
 
 " Auto set to mouse mode
 set mouse=a

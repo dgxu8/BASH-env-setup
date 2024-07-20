@@ -57,6 +57,7 @@ basic_apt:
     name: nodejs
   vim: vim
   venv: python3.8-venv
+  libsqlite3-dev: libsqlite3-dev
 
 wsl_apt:
   _install_fmt: "sudo apt install {name}"
@@ -125,7 +126,7 @@ basic_gh_release:
     cmds:
       - tar -zxf tmux-*.tar.gz
       - cd tmux-*/
-      - ./configure
+      - ./configure --enable-sixel
       - make -j 20
       - sudo make install
   lazygit:
@@ -141,6 +142,18 @@ basic_gh_release:
 
 basic_custom:
   _check_fmt: "which {name}"
+  lnav:
+    __depends__: [curl, libsqlite3-dev]
+    dir: *tmp_dir
+    name: lnav
+    cmds:
+      - curl -LO https://github.com/tstack/lnav/releases/download/v0.12.2/lnav-0.12.2.tar.gz
+      - tar -xzf lnav-*.tar.gz
+      - cd lnav-*/
+      - ./configure
+      - make -j32
+      - sudo make install
+
   nvim:
     # maybe ripgrep/fd
     __rdepends__: &nvim_rdepends [pynvim, fzf, venv, treesitter, deno]

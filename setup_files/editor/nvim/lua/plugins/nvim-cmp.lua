@@ -121,7 +121,7 @@ function plugin.config()
             ["<C-Space>"] = cmp.mapping.complete(),
             ["<C-e>"] = cmp.mapping.abort(),
             ["<cr>"] = cmp.mapping.confirm {
-                behavior = cmp.ConfirmBehavior.Replace,
+                behavior = cmp.ConfirmBehavior.Insert,
                 select = true,
             },
             ["<Tab>"] = function(fallback)
