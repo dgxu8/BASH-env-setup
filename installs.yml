@@ -230,6 +230,12 @@ basic_custom:
       - curl https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh -o ~/.bash-preexec.sh
       # - echo '[[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh' >> ~/.bashrc
 
+  wezterm-sh:
+    _check_fmt: "ls {name}"
+    name: ~/.wezterm.sh
+    cmds:
+      - curl https://raw.githubusercontent.com/wez/wezterm/main/assets/shell-integration/wezterm.sh -o ~/.wezterm.sh
+
   deno:
     name: deno
     description: Some JS thing that is needed for peek.nvim (markdown previewer)

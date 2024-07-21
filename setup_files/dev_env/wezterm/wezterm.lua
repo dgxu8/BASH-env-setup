@@ -22,6 +22,8 @@ config.window_padding = {
     bottom = 0,
 }
 
+local tmux_foreground_shared = require 'vim_bind_helper'
+
 local act = wezterm.action
 config.keys = {
     -- Disable: Hide
@@ -45,6 +47,9 @@ config.keys = {
     -- Disable: CloseCurrentTab{confirm=true}
     {key  = 'w', mods = 'SUPER', action = act.DisableDefaultAssignment},
 }
+
+table.insert(config.keys, tmux_foreground_shared('PageUp', '', act.ScrollByPage(-0.9)))
+table.insert(config.keys, tmux_foreground_shared('PageDown', '', act.ScrollByPage(0.9)))
 
 -- Rebind ActivateTab
 for i = 1, 8 do
