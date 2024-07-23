@@ -135,7 +135,7 @@ alias la='exa -a'
 alias l='exa'
 alias lx="exa"
 alias tree="exa -T"
-alias bat="batcat --pager=never"
+alias bat="bat --pager=never"
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -192,7 +192,7 @@ alias cim="nvim"
 alias delet="find . -name '*.orig' -delete -print"
 alias copy="rsync -a -L --info=progress2"
 alias subdate="git submodule update --init --recursive"
-alias fz="FZF_DEFAULT_COMMAND='fd --type f --no-ignore' fzf --preview 'batcat --color=always --style=numbers --line-range=:500 {}'"
+alias fz="FZF_DEFAULT_COMMAND='fd --type f --no-ignore' fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}'"
 
 # This is to fix an issue with opening vim on a ssh session inside of tmux (tmux->ssh->vim).
 # This is because tmux sets TERM to tmux-256color which can break vim whil ssh'd in.
@@ -226,7 +226,7 @@ function gitgraph() {
     git graph --color=always --model=simple --style=round --wrap=none $@ | less -R
 }
 
-export MANPAGER="sh -c 'col -bx | batcat -l man -p'"
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 export MANROFFOPT="-c"
 
 . "$HOME/.cargo/env"
