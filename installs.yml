@@ -88,10 +88,6 @@ basic_rust:
   difftastic: difftastic
   eza: eza
   delta: git-delta
-  atuin:
-    __depends__: bash-preexec-sh
-    name: atuin
-    description: Better bash history
   git-graph: git-graph
 
 # All NPM installs are global
@@ -158,6 +154,12 @@ gh_releases:
 
 basic_custom:
   _check_fmt: "which {name}"
+  atuin:
+    __depends__: bash-preexec-sh
+    name: atuin
+    description: Better bash history
+    cmds:
+      - curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
   nvim:
     # maybe ripgrep/fd
     __rdepends__: &nvim_rdepends [pynvim, fzf, venv, treesitter, deno]
