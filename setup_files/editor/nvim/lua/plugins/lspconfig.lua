@@ -108,8 +108,9 @@ function user.on_attach()
     bufmap("n", "<space>rn", "<cmd>lua vim.lsp.buf.rename()<cr>")
     bufmap("n", "<space><space>", "<cmd>lua vim.lsp.buf.hover()<cr>")
 
-    require("clangd_extensions.inlay_hints").setup_autocmd()
-    require("clangd_extensions.inlay_hints").set_inlay_hints()
+    vim.keymap.set("n", "<leader>lh", function()
+        require("clangd_extensions.inlay_hints").toggle_inlay_hints()
+    end, {buffer = true, desc = "[l]sp [h]ints toggle"})
 end
 
 local inactive_hl = false

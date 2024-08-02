@@ -59,8 +59,6 @@ endif
 
 filetype plugin indent on
 
-noremap <leader>n :set relativenumber!<CR>
-
 function! <SID>StripTrailingWhitespaces()
     let l = line(".")
     let c = col(".")
@@ -174,9 +172,6 @@ map <leader>bd :Bclose<cr>
 " Reload our .vimrc
 nmap <leader>~ :source ~/.vimrc<CR>:redraw!<CR>:echo "~/.vimrc reloaded!"<CR>
 
-" Shortcut to rapidly toggle `set list`
-nmap <leader>l :set list!<CR>
-
 " leader f to search for filename under cursor using fzf
 "nnoremap <leader>f <Esc>:call fzf#vim#files('', {'options':'--query='.fzf#shellescape(expand('<cfile>:t'))})<CR>
 
@@ -188,10 +183,6 @@ nnoremap <leader>o <Esc>:exec "e " . expand('%:p:h')<CR>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Remap VIM 0 to first non-blank character
 map 0 ^
-
-" Ubuntu is weird and alt+j/k gives a weird keycombinaion so we need to rebind it
-map <Esc>j <A-j>
-map <Esc>k <A-k>
 
 nnoremap <A-a> <C-a>
 nnoremap <A-x> <C-x>

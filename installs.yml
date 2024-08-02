@@ -251,3 +251,25 @@ basic_custom:
     cmds:
       - sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b ~/.local/bin
       - curl https://raw.githubusercontent.com/go-task/task/main/completion/bash/task.bash -o ~/.task_autocomplete
+  lsix:
+    dir: *tmp_dir
+    name: lsix
+    description: sixel ls
+    cmds:
+      - git clone https://github.com/hackerb9/lsix.git
+      - cd lsix
+      - chmod +x lsix
+      - cp lsix /usr/local/bin/
+
+  chafa:
+    dir: *tmp_dir
+    name: chafa
+    description: Chafa is a command-line utility that converts image data, including animated GIFs, into graphics
+                 formats or ANSI/Unicode character art suitable for display in a terminal.
+    cmds:
+      - git clone https://github.com/hpjansson/chafa.git
+      - cd chafa
+      - ./autogen.sh
+      - make -j20
+      - sudo make install
+
