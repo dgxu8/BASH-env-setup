@@ -103,57 +103,61 @@ basic_npm:
   treesitter:
     name: tree-sitter
 
-basic_gh_release:
-  # Install via gh release download -R $repo -p $package_glob
-  _install_fmt: "gh release download -R {repo} -p {package_glob}"
+gh_releases:
+  _pull_from_gh: true  # Will automatically fill {pkg_name}, need to provide {repo} and {glob}
+  _install_fmt: "sudo dpkg -i {pkg_name}"
   _check_fmt: "which {name}"
-  __depends__: gh
   batcat:
     __rdepends__: bat_syntaxes
     dir: *tmp_dir
     name: bat
     description: Improved cat
     repo: sharkdp/bat
-    package_glob: bat_*_amd64.deb
-    cmds: "sudo dpkg -i bat_*_amd64.deb"
-  tmux:
-    __depends__: [libevent, libncurses5]
-    __rdepends__: [tpm, tmux_resurrect]
+    glob: bat_*_amd64.deb
+  duf:
     dir: *tmp_dir
-    name: tmux
-    repo: tmux/tmux
-    package_glob: tmux-*.tar.gz
-    cmds:
-      - tar -zxf tmux-*.tar.gz
-      - cd tmux-*/
-      - ./configure --enable-sixel
-      - make -j 20
-      - sudo make install
+    name: duf
+    description: TUI version of df
+    repo: muesli/duf
+    glob: duf_*amd64.deb
   lazygit:
     __rdepends__: delta
-    _install_fmt: "gh release download -R {repo} -p {package_glob} -O {package_out}"
+    _install_fmt: "tar xf {pkg_name} lazygit"
     dir: *tmp_dir
     name: lazygit
     repo: jesseduffield/lazygit
-    package_glob: lazygit_*_Linux_x86_64.tar.gz
-    package_out: lazygit.tar.gz
+    glob: lazygit_*_Linux_x86_64.tar.gz
     cmds:
-      - sudo tar xf lazygit.tar.gz -C /usr/local/bin lazygit
-
-basic_custom:
-  _check_fmt: "which {name}"
+      - sudo install lazygit /usr/local/bin
   lnav:
     __depends__: [curl, libsqlite3-dev]
+    _install_fmt: "tar -zxf {pkg_name}"
     dir: *tmp_dir
     name: lnav
+    repo: tstack/lnav
+    glob: lnav-*.tar.gz
     cmds:
-      - curl -LO https://github.com/tstack/lnav/releases/download/v0.12.2/lnav-0.12.2.tar.gz
-      - tar -xzf lnav-*.tar.gz
       - cd lnav-*/
       - ./configure
       - make -j32
       - sudo make install
+  tmux:
+    __depends__: [libevent, libncurses5]
+    __rdepends__: [tpm, tmux_resurrect]
+    _install_fmt: "tar -zxf {pkg_name}"
+    dir: *tmp_dir
+    name: tmux
+    repo: tmux/tmux
+    glob: tmux-*.tar.gz
+    cmds:
+      - cd tmux-*/
+      - ./configure --enable-sixel
+      - make -j 20
+      - sudo make install
 
+
+basic_custom:
+  _check_fmt: "which {name}"
   nvim:
     # maybe ripgrep/fd
     __rdepends__: &nvim_rdepends [pynvim, fzf, venv, treesitter, deno]
