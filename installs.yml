@@ -86,7 +86,7 @@ basic_rust:
   __depends__: rust
   gitui: gitui
   difftastic: difftastic
-  exa: exa
+  eza: eza
   delta: git-delta
   atuin:
     __depends__: bash-preexec-sh

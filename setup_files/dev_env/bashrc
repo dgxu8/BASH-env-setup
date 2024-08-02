@@ -130,11 +130,10 @@ fi
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 # some more ls aliases
-alias ll='exa -alF'
-alias la='exa -a'
-alias l='exa'
-alias lx="exa"
-alias tree="exa -T"
+alias ll='eza -alF'
+alias la='eza -a'
+alias l='eza'
+alias tree="eza -T"
 alias bat="bat --pager=never"
 
 # Add an "alert" alias for long running commands.  Use like so:
