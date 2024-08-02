@@ -7,11 +7,13 @@ import os
 import shutil
 import subprocess
 
+from fnmatch import fnmatch
 from glob import glob
 from copy import deepcopy
 from pathlib import Path
 from typing import List, Dict, Union, Set
 
+import requests
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import (
     NestedCompleter,
@@ -34,6 +36,7 @@ DEPENDS_ATTR_KEY = "__depends__"
 RDEPENDS_ATTR_KEY = "__rdepends__"
 INSTALL_ATTR_KEY = "_install_fmt"
 CHECK_ATTR_KEY = "_check_fmt"
+PULL_GH_API = "_pull_from_gh"
 
 
 class InstallFailedError(Exception):
@@ -46,6 +49,7 @@ class NodeAttributes:
         self.rdepends: List[str] = []
         self.install_fmt = None
         self.check_fmt = None
+        self.pull_from_gh = False
         if isinstance(pkg_info, dict):
             self.update_attr(pkg_info)
 
@@ -61,6 +65,7 @@ class NodeAttributes:
         self.rdepends += listify_element(pkg_info, RDEPENDS_ATTR_KEY)
         self.install_fmt = pkg_info.get(INSTALL_ATTR_KEY, self.install_fmt)
         self.check_fmt = pkg_info.get(CHECK_ATTR_KEY, self.check_fmt)
+        self.pull_from_gh = pkg_info.get(PULL_GH_API, self.pull_from_gh)
 
     def __str__(self):
         mstr = stringify(vars(self))
@@ -77,11 +82,22 @@ class PackageNode:
         self._key_name = key_name
         self.install_cmd = None
         self.check_cmd = None
+        self.gh_repo = None
 
         if isinstance(pkg_info, str):
             pkg_info = {"name": pkg_info}
 
         self.attr = parent_attr.copy_update(pkg_info)
+
+        try:
+            if self.attr.pull_from_gh:
+                pkg_name, self.gh_repo = get_gh_latest(pkg_info["repo"], pkg_info["glob"])
+                pkg_info = pkg_info.copy()
+                pkg_info["pkg_name"] = pkg_name
+        except KeyError:
+            print("If you need to set pull_from_gh, you need to set repo and regex")
+            raise
+
         try:
             if self.attr.install_fmt is not None:
                 self.install_cmd = self.attr.install_fmt.format(**pkg_info)
@@ -158,6 +174,10 @@ class PackageNode:
 
         # Install self
         try:
+            if self.attr.pull_from_gh:
+                print(f"Pulling {self.gh_repo}")
+                subprocess.run(f"wget {self.gh_repo}", shell=True, check=True)
+
             if len(self.pre_cmds) > 0:
                 print("Running pre-commands")
                 self._run_cmds(self.pre_cmds)
@@ -402,6 +422,26 @@ def build_dependency_dict() -> Dict[str, PackageNode]:
         pkg_dict.update(parse_category(packages))
 
     return pkg_dict
+
+
+def get_gh_latest(repo: str, pkg_glob: str) -> (str, str):
+    """Uses github's api to search the releases for a package"""
+    name = None
+    addr = None
+
+    # curl -s https://api.github.com/repos/{repo}/releases/latest
+    resp = requests.get(f"https://api.github.com/repos/{repo}/releases/latest", timeout=5)
+    assert resp.status_code == 200, f"github api request on {repo} failed"
+
+    assets = resp.json()["assets"]
+    for download in assets:
+        if fnmatch(download["name"], pkg_glob):
+            assert addr is None, f"Multiple matches found for {pkg_glob}"
+            addr = download["browser_download_url"]
+            name = download["name"]
+    assert None not in (name, addr), f"No matches found for {pkg_glob}"
+
+    return name, addr
 
 
 HELP_STR = """

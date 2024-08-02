@@ -23,3 +23,4 @@ echo ""
 echo "\n=== Installing Base Python Packages ==="
 sudo pip3 install pyyaml
 sudo pip3 install prompt_toolkit
+sudo pip3 install requests
