@@ -236,9 +236,10 @@ export PATH=~/.local/bin:"$PATH"
 [[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh
 [[ -f ~/.wezterm.sh ]] && source ~/.wezterm.sh
 
-eval "$(atuin init bash --disable-up-arrow)"
 . "$HOME/.atuin/bin/env"
+eval "$(atuin init bash --disable-up-arrow)"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
