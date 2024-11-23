@@ -198,6 +198,11 @@ vnoremap <A-k> :m '<-2<CR>gv=gv
 " Remove suspending to terminal
 nnoremap <C-z> <nop>
 
+" Map Ctrl-Backspace to delete the previous word in insert mode. We
+" need to use <C-H> because Ctrl-backspace is not a recongized keycode
+" and share the same mapping as ctrl-h.
+imap <C-H> <C-W>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

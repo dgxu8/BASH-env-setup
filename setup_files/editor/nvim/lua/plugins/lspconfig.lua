@@ -53,7 +53,7 @@ function plugin.config()
                     settings = {
                         pylsp = {
                             plugins = {
-                                pylint = {enabled = true},
+                                pylint = {enabled = false},
                                 jedi = {
                                     environment = "/usr/bin/python3",
                                     auto_import_modules = {},

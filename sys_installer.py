@@ -439,7 +439,7 @@ def get_gh_latest(repo: str, pkg_glob: str) -> (str, str):
             assert addr is None, f"Multiple matches found for {pkg_glob}"
             addr = download["browser_download_url"]
             name = download["name"]
-    assert None not in (name, addr), f"No matches found for {pkg_glob}"
+    assert None not in (name, addr), f"No matches found for {pkg_glob} in {resp}"
 
     return name, addr
 

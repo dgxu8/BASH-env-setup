@@ -60,6 +60,11 @@ basic_apt:
   libsqlite3-dev: libsqlite3-dev
   libglib2.0-dev: libglib2.0-dev
   liblua5.2-dev: liblua5.2-dev
+  freetype: libfreetype6-dev
+  libjpeg: libjpeg-dev
+  librsvg: librsvg2-dev
+  libtiff: libtiff5-dev
+  libwebp: libwebp-dev
 
 wsl_apt:
   _install_fmt: "sudo apt install {name}"
@@ -92,6 +97,7 @@ basic_rust:
   eza: eza
   delta: git-delta
   git-graph: git-graph
+  diskus: diskus
 
 # All NPM installs are global
 basic_npm:
@@ -166,10 +172,23 @@ gh_releases:
       - ./configure --enable-sixel
       - make -j 20
       - sudo make install
-
+  shellcheck:
+    _install_fmt: tar -xf {pkg_name}
+    dir: *tmp_dir
+    name: spellcheck
+    repo: koalaman/shellcheck
+    glob: shellcheck-*linux.x86_64.tar.xz
+    cmds:
+      - cd shellcheck-*/
+      - cp shellcheck ~/.local/bin/
 
 basic_custom:
   _check_fmt: "which {name}"
+  uv:
+    name: uv
+    description: pip/pipx/poetry/virtualenv replacement
+    cmds:
+      - curl -LsSf https://astral.sh/uv/install.sh | sh
   atuin:
     __depends__: bash-preexec-sh
     name: atuin
@@ -280,6 +299,7 @@ basic_custom:
       - cp lsix /usr/local/bin/
 
   chafa:
+    __depends__: [freetype, libjpeg, librsvg, libtiff, libwebp]
     dir: *tmp_dir
     name: chafa
     description: Chafa is a command-line utility that converts image data, including animated GIFs, into graphics
@@ -290,4 +310,15 @@ basic_custom:
       - ./autogen.sh
       - make -j20
       - sudo make install
+
+  luarocks:
+    dir: *tmp_dir
+    name: luarocks
+    description: Lua package manager
+    cmds:
+      - wget https://luarocks.org/releases/luarocks-3.11.1.tar.gz
+      - tar zxpf luarocks-3.11.1.tar.gz
+      - cd luarocks-3.11.1
+      - ./configure && make && sudo make install
+      - sudo luarocks install luasec
 

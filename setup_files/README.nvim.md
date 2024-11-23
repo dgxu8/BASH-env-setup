@@ -40,9 +40,13 @@ Closed `]`, `}`, and `)` for no spaces
 - `<C-Space>` cmp.mapping.complete()
 - `<C-e>` cmp.mapping.abort()
 
-# comment.nvim
+## comment.nvim
 - `gcc` comment current line
 - `gcA` Add comment at end of line
 - `gco` comment on line below
 - visual mode`gc` comment block
 - visual mode`gb` comment block w/ block style comment
+
+## quicker
+- "+" to expand quickfix menu
+- "_" to close expanded quickfix menu

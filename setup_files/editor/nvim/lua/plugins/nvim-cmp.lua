@@ -70,6 +70,12 @@ function plugin.config()
     vim.api.nvim_set_hl(0, "CmpItemKindColor", { fg = "#D8EEEB", bg = "#58B5A8" })
     vim.api.nvim_set_hl(0, "CmpItemKindTypeParameter", { fg = "#D8EEEB", bg = "#58B5A8" })
 
+    local has_words_before = function()
+        if vim.api.nvim_get_option_value("buftype", {}) == "prompt" then return false end
+        local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+        return col ~= 0 and vim.api.nvim_buf_get_text(0, line-1, 0, line-1, col, {})[1]:match("^%s*$") == nil
+    end
+
     local select_opts = {behavior = cmp.SelectBehavior.Select}
     cmp.setup({
         formatting = {
@@ -96,6 +102,7 @@ function plugin.config()
             end
         },
         sorting = {
+            priority_weight = 2,
             comparators = {
                 cmp.config.compare.offset,
                 cmp.config.compare.exact,
@@ -124,24 +131,24 @@ function plugin.config()
                 behavior = cmp.ConfirmBehavior.Insert,
                 select = true,
             },
-            ["<Tab>"] = function(fallback)
-                if cmp.visible() then
+            ["<Tab>"] = vim.schedule_wrap(function(fallback)
+                if cmp.visible() and has_words_before() then
                     cmp.select_next_item(select_opts)
                 elseif luasnip.expand_or_jumpable() then
                     luasnip.expand_or_jump()
                 else
                     fallback()
                 end
-            end,
-            ["<S-Tab>"] = function(fallback)
-                if cmp.visible() then
+            end),
+            ["<S-Tab>"] = vim.schedule_wrap(function(fallback)
+                if cmp.visible() and has_words_before() then
                     cmp.select_prev_item(select_opts)
                 elseif luasnip.jumpable(-1) then
                     luasnip.jump(-1)
                 else
                     fallback()
                 end
-            end,
+            end),
         },
     })
 
