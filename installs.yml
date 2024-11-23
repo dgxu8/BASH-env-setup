@@ -58,6 +58,8 @@ basic_apt:
   vim: vim
   venv: python3.8-venv
   libsqlite3-dev: libsqlite3-dev
+  libglib2.0-dev: libglib2.0-dev
+  liblua5.2-dev: liblua5.2-dev
 
 wsl_apt:
   _install_fmt: "sudo apt install {name}"
@@ -78,6 +80,7 @@ basic_pip:
   grip: grip
   tmuxp: tmuxp
   pylint: pylint
+  meson: meson
 
 basic_rust:
   _install_fmt: "cargo install {name}"
@@ -137,6 +140,19 @@ gh_releases:
       - ./configure
       - make -j32
       - sudo make install
+  tio:
+    __depends__: [meson, libglib2.0-dev, liblua5.2-dev]
+    _install_fmt: "tar xf {pkg_name}"
+    dir: *tmp_dir
+    name: tio
+    description: "More modern serial device tool"
+    repo: tio/tio
+    glob: tio-*.tar.xz
+    cmds:
+      - cd tio-*/
+      - meson setup build
+      - meson compile -C build
+      - meson install -C build
   tmux:
     __depends__: [libevent, libncurses5]
     __rdepends__: [tpm, tmux_resurrect]
