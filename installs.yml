@@ -59,7 +59,7 @@ basic_apt:
   venv: python3.8-venv
   libsqlite3-dev: libsqlite3-dev
   libglib2.0-dev: libglib2.0-dev
-  liblua5.2-dev: liblua5.2-dev
+  liblua-dev: liblua5.3-dev
   freetype: libfreetype6-dev
   libjpeg: libjpeg-dev
   librsvg: librsvg2-dev
@@ -147,7 +147,7 @@ gh_releases:
       - make -j32
       - sudo make install
   tio:
-    __depends__: [meson, libglib2.0-dev, liblua5.2-dev]
+    __depends__: [meson, libglib2.0-dev, liblua-dev]
     _install_fmt: "tar xf {pkg_name}"
     dir: *tmp_dir
     name: tio
@@ -312,6 +312,7 @@ basic_custom:
       - sudo make install
 
   luarocks:
+    __depends__: [lua, liblua-dev]
     dir: *tmp_dir
     name: luarocks
     description: Lua package manager
