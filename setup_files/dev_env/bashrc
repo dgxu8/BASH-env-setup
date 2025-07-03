@@ -162,7 +162,7 @@ if ! shopt -oq posix; then
 fi
 
 # Source task auto complete as well
-. ~/.task_autocomplete
+eval "$(task --completion bash)"
 
 # Source local bash rc file if available
 if [ -f ~/.localrc ]; then

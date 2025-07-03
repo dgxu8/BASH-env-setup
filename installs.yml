@@ -287,7 +287,6 @@ basic_custom:
     description: Runs misc command line tasks that are defined in a Taskfile.yaml
     cmds:
       - sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b ~/.local/bin
-      - curl https://raw.githubusercontent.com/go-task/task/main/completion/bash/task.bash -o ~/.task_autocomplete
   lsix:
     dir: *tmp_dir
     name: lsix
