@@ -98,6 +98,7 @@ basic_rust:
   delta: git-delta
   git-graph: git-graph
   diskus: diskus
+  yazi: yazi-fm yazi-cli
 
 # All NPM installs are global
 basic_npm:

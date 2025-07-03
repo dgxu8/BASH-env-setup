@@ -14,3 +14,6 @@ ln -sfv "${my_path}/tmux.conf" "${HOME}/.tmux.conf"
 
 echo "Creating wezterm symlink"
 ln -sfvd $my_path/wezterm "${HOME}/.config/"
+
+echo "Creating yazi symlink"
+ln -sfvd $my_path/yazi "${HOME}/.config/"
