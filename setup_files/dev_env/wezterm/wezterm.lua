@@ -13,6 +13,8 @@ config.font = wezterm.font_with_fallback {'SauceCodePro Nerd Font Mono', 'Hack N
 config.font_size = 12
 config.freetype_load_target = "Light"
 
+config.warn_about_missing_glyphs = false
+
 -- Scrollback settings
 config.enable_scroll_bar = true
 config.scrollback_lines = 100000
