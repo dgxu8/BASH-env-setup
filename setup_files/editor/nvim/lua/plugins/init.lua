@@ -5,7 +5,7 @@ local plugins = {
     {"kyazdani42/nvim-web-devicons", lazy = true},
     {"kergoth/vim-bitbake"},
 --    {"folke/neodev.nvim", opts = {}},
-    {"numToStr/Comment.nvim", config = true, keys = {{"gc", mode = {"n", "x"}}, {"gb", mode = {"n", "x"}}}},
+    {"numToStr/Comment.nvim", config = true, keys = {{"g", mode = {"n", "x"}}}},
 }
 
 return plugins

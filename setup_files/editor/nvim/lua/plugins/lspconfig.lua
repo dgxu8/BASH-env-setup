@@ -3,7 +3,7 @@ local user = {}
 
 plugin.dependencies = {
     {"hrsh7th/cmp-nvim-lsp"},
-    {"williamboman/mason-lspconfig.nvim"},
+    {"mason-org/mason-lspconfig.nvim"},
     {"p00f/clangd_extensions.nvim"},
 }
 
@@ -27,74 +27,6 @@ function plugin.config()
         desc = "LSP actions",
         callback = user.on_attach
     })
-
-    require("mason-lspconfig").setup({
-        ensure_installed = {
-            "clangd",
-            "pylsp",
-            "ruff_lsp",
-            "lua_ls",
-            "marksman",
-        },
-        handlers = {
-            function(server)
-                lspconfig[server].setup({})
-            end,
-            ["clangd"] = function()
-                lspconfig.clangd.setup({
-                    cmd = {"clangd", "--function-arg-placeholders=0", "--offset-encoding=utf-16"},
-                })
-            end,
-            ["pylsp"] = function()
-                lspconfig.pylsp.setup({
-                    flags = {
-                        allow_incremenetal_sync = false
-                    },
-                    settings = {
-                        pylsp = {
-                            plugins = {
-                                pylint = {enabled = false},
-                                jedi = {
-                                    environment = "/usr/bin/python3",
-                                    auto_import_modules = {},
-                                },
-                                mccabe = {enabled = false},
-                                yapf = {enabled = false},
-                            },
-                        },
-                    },
-                })
-            end,
-            ["lua_ls"] = function()
-                lspconfig.lua_ls.setup({
-                    settings = {
-                        Lua = {
-                            runtime = {
-                                -- Tell the language server which version of Lua you're using
-                                -- (most likely LuaJIT in the case of Neovim)
-                                version = 'LuaJIT',
-                            },
-                            diagnostics = {
-                                -- Get the language server to recognize the `vim` global
-                                globals = {
-                                    'vim',
-                                    'require'
-                                },
-                            },
-                            workspace = {
-                                -- Make the server aware of Neovim runtime files
-                                library = vim.api.nvim_get_runtime_file("", true),
-                            },
-                            -- Do not send telemetry data containing a randomized but unique identifier
-                            telemetry = {
-                                enable = false,
-                            },
-                        },
-                    },
-                })
-            end
-        },
-    })
 end
 
 function user.on_attach()
@@ -112,6 +44,12 @@ function user.on_attach()
         require("clangd_extensions.inlay_hints").toggle_inlay_hints()
     end, {buffer = true, desc = "[l]sp [h]ints toggle"})
 end
+
+-- New with nvim 0.11 we need to st this to show the message to the side
+vim.diagnostic.config({
+    virtual_text = true,
+})
+vim.keymap.set("n", "<leader>tt", vim.diagnostic.open_float, { desc = "Open diagnostic in floating window" })
 
 local inactive_hl = false
 local function toggle_inactive_hl ()
