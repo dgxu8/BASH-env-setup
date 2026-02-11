@@ -25,20 +25,8 @@ basic_apt:
   curl: curl # type -p curl to check if we have it
   libclang: libclang-10-dev
   cmake: cmake
-  rust:
-    pre_cmds: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-    name: cargo
   libevent: libevent-dev
   libncurses5: libncurses5-dev
-  gh:
-    __depends__: curl
-    pre_cmds:
-      - curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-      - sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-      - echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list
-      - sudo apt update
-    name: gh # Requres apt update before apt install
-    cmds: gh auth login
   meld: meld
   lua: lua5.3
   pkgcfg: pkg-config
@@ -55,7 +43,6 @@ basic_apt:
       - echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
       - sudo apt update
     name: nodejs
-  vim: vim
   venv: python3.8-venv
   libsqlite3-dev: libsqlite3-dev
   libglib2.0-dev: libglib2.0-dev
@@ -65,6 +52,9 @@ basic_apt:
   librsvg: librsvg2-dev
   libtiff: libtiff5-dev
   libwebp: libwebp-dev
+  7zip: 7zip
+  jq: jq
+  poppler: poppler-utils
 
 wsl_apt:
   _install_fmt: "sudo apt install {name}"
@@ -73,14 +63,9 @@ wsl_apt:
   yad: yad
   gedit: gedit
 
-deprecated_apt:
-  _install_fmt: "sudo apt install {name}"
-  _check_fmt: "dpkg -s {name} | grep 'ok installed'"
-  ctags: exuberant-ctags
-
 basic_pip:
-  _install_fmt: "pip3 install {name}"
-  _check_fmt: "pip3 show {name}"
+  _install_fmt: "uv tool install {name}"
+  _check_fmt: "uv tool list | grep {name}"
   pynvim: pynvim
   grip: grip
   tmuxp: tmuxp
@@ -98,7 +83,11 @@ basic_rust:
   delta: git-delta
   git-graph: git-graph
   diskus: diskus
-  yazi: yazi-fm yazi-cli
+  resvg: resvg
+  yazi:
+    __rdepends__: [fd, rg, ffmpeg, 7zip, fzf, resvg, poppler, jq]
+    name: yazi-build
+  treesitter: tree-sitter-cli
 
 # All NPM installs are global
 basic_npm:
@@ -106,8 +95,6 @@ basic_npm:
   _check_fmt: "npm list -g {name}"
   __depends__: npm
   tldr: tldr
-  treesitter:
-    name: tree-sitter
 
 gh_releases:
   _pull_from_gh: true  # Will automatically fill {pkg_name}, need to provide {repo} and {glob}
@@ -120,12 +107,14 @@ gh_releases:
     description: Improved cat
     repo: sharkdp/bat
     glob: bat_*_amd64.deb
+
   duf:
     dir: *tmp_dir
     name: duf
     description: TUI version of df
     repo: muesli/duf
     glob: duf_*amd64.deb
+
   lazygit:
     __rdepends__: delta
     _install_fmt: "tar xf {pkg_name} lazygit"
@@ -135,6 +124,7 @@ gh_releases:
     glob: lazygit_*_Linux_x86_64.tar.gz
     cmds:
       - sudo install lazygit /usr/local/bin
+
   lnav:
     __depends__: [curl, libsqlite3-dev]
     _install_fmt: "tar -zxf {pkg_name}"
@@ -147,6 +137,7 @@ gh_releases:
       - ./configure
       - make -j32
       - sudo make install
+
   tio:
     __depends__: [meson, libglib2.0-dev, liblua-dev]
     _install_fmt: "tar xf {pkg_name}"
@@ -160,6 +151,7 @@ gh_releases:
       - meson setup build
       - meson compile -C build
       - meson install -C build
+
   tmux:
     __depends__: [libevent, libncurses5]
     __rdepends__: [tpm, tmux_resurrect]
@@ -173,6 +165,7 @@ gh_releases:
       - ./configure --enable-sixel
       - make -j 20
       - sudo make install
+
   shellcheck:
     _install_fmt: tar -xf {pkg_name}
     dir: *tmp_dir
@@ -185,26 +178,29 @@ gh_releases:
 
 basic_custom:
   _check_fmt: "which {name}"
-  uv:
-    name: uv
-    description: pip/pipx/poetry/virtualenv replacement
-    cmds:
-      - curl -LsSf https://astral.sh/uv/install.sh | sh
+
+  rust:
+    name: cargo
+    description: rust lang
+    cmds: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
   atuin:
     __depends__: bash-preexec-sh
     name: atuin
     description: Better bash history
     cmds:
       - curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
+
   nvim:
     # maybe ripgrep/fd
-    __rdepends__: &nvim_rdepends [pynvim, fzf, venv, treesitter, deno]
+    __rdepends__: &nvim_rdepends [pynvim, fzf, treesitter, luarocks]
     dir: *tmp_dir
     name: nvim
     cmds:
       - curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
       - chmod u+x nvim-linux-x86_64.appimage
       - sudo mv ./nvim-linux-x86_64.appimage /usr/bin/nvim
+
   gitprompt:
     _check_fmt: "test -f ~/.git-prompt.sh"
     dir: *tmp_dir
@@ -215,19 +211,23 @@ basic_custom:
       - git sparse-checkout set contrib/completion
       - git checkout
       - cp contrib/completion/git-prompt.sh ~/.git-prompt.sh
+
   fzf:
     name: fzf
     cmds:
       - git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
       - ~/.fzf/install
+
   tpm:
     _check_fmt: "test -d ~/.tmux/plugins/tpm"
     description: TMUX plugin manager
     cmds: git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
   tmux_resurrect:
     _check_fmt: "test -d ~/.tmux/tmux-resurrect"
     cmds: git clone https://github.com/tmux-plugins/tmux-resurrect
           ~/.tmux/tmux-resurrect
+
   bat_syntaxes:
     _check_fmt: "bat --list-languages | grep BitBake"
     cmds:
@@ -235,8 +235,8 @@ basic_custom:
       - cd ~/.config/bat/syntaxes
       - git clone https://github.com/Driim/bitbake-syntax
       - bat cache --build
-  vim9:
-    __rdepends__: [lua]
+
+  vim:
     dir: *tmp_dir
     name: vim
     cmds:
@@ -244,6 +244,7 @@ basic_custom:
       - cd vim/src/
       - make -j 20
       - sudo make install
+
   bear:
     __depends__: [cmake, pkgcfg, libfmt-dev, libspdlog-dev, nlohmann-json3-dev, libgrpc++-dev, protobuf-compiler-grpc, libssl-dev]
     dir: *tmp_dir
@@ -255,6 +256,7 @@ basic_custom:
       - cmake -DENABLE_UNIT_TESTS=OFF -DENABLE_FUNC_TESTS=OFF $BEAR_SOURCE_DIR
       - make all -j 20
       - sudo make install
+
   nvim_tips:
     __depends__: *nvim_rdepends
     dir: *tmp_dir
@@ -266,6 +268,7 @@ basic_custom:
       - cd neovim
       - make CMAKE_BUILD_TYPE=Release -j 20
       - sudo make install
+
   bash-preexec-sh:
     name: bash_preexec
     cmds:
@@ -278,16 +281,12 @@ basic_custom:
     cmds:
       - curl https://raw.githubusercontent.com/wez/wezterm/main/assets/shell-integration/wezterm.sh -o ~/.wezterm.sh
 
-  deno:
-    name: deno
-    description: Some JS thing that is needed for peek.nvim (markdown previewer)
-    cmds: curl -fsSL https://deno.land/install.sh | sh
-
   taskfile:
     name: task
     description: Runs misc command line tasks that are defined in a Taskfile.yaml
     cmds:
       - sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b ~/.local/bin
+
   lsix:
     dir: *tmp_dir
     name: lsix
@@ -322,4 +321,3 @@ basic_custom:
       - cd luarocks-3.11.1
       - ./configure && make && sudo make install
       - sudo luarocks install luasec
-
