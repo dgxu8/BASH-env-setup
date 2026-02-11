@@ -96,7 +96,7 @@ basic_npm:
   __depends__: npm
   tldr: tldr
 
-gh_releases:
+gh_debian_releases:
   _pull_from_gh: true  # Will automatically fill {pkg_name}, need to provide {repo} and {glob}
   _install_fmt: "sudo dpkg -i {pkg_name}"
   _check_fmt: "which {name}"

@@ -9,6 +9,10 @@ install_ubuntu() {
 	sudo mkdir -m 0755 -p /etc/apt/keyrings/
 }
 
+install_endeavouros() {
+	sudo pacman -Syu
+	makepkg -si
+}
 
 echo "https://github.com/dennisgxu/BASH-env-setup.git"
 
@@ -18,6 +22,8 @@ if [ -f /etc/os-release ]; then
 	. /etc/os-release
 	if [ "$ID" == "ubuntu" ]; then
 		install_ubuntu
+	elif [ "$ID" = "endeavouros" ]; then
+		install_endeavouros
 	else
 		echo "Unknown distro $ID"
 		exit 1

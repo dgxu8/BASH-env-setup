@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import platform
 import shutil
 import subprocess
 
@@ -20,11 +21,13 @@ from fnmatch import fnmatch
 from glob import glob
 from copy import deepcopy
 from pathlib import Path
-from typing import List, Dict, Union, Set
+from typing import Any, Callable, override
 
+from prompt_toolkit.document import Document
 import requests
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import (
+    CompleteEvent,
     NestedCompleter,
     FuzzyCompleter,
     WordCompleter,
@@ -38,7 +41,6 @@ try:
 except ImportError:
     from yaml import Loader, Dumper
 
-
 INSTALLS_FILE = "installs.yml"
 
 DEPENDS_ATTR_KEY = "__depends__"
@@ -47,28 +49,30 @@ INSTALL_ATTR_KEY = "_install_fmt"
 CHECK_ATTR_KEY = "_check_fmt"
 PULL_GH_API = "_pull_from_gh"
 
+type pkg_t = dict[str, str]
+
 
 class InstallFailedError(Exception):
     pass
 
 
 class NodeAttributes:
-    def __init__(self, pkg_info: Union[dict, str]):
-        self.depends: List[str] = []
-        self.rdepends: List[str] = []
-        self.install_fmt = None
-        self.check_fmt = None
-        self.pull_from_gh = False
+    def __init__(self, pkg_info: pkg_t|str):
+        self.depends: list[str] = []
+        self.rdepends: list[str] = []
+        self.install_fmt: str|None = None
+        self.check_fmt: str|None = None
+        self.pull_from_gh: str|bool = False
         if isinstance(pkg_info, dict):
             self.update_attr(pkg_info)
 
-    def copy_update(self, pkg_info: dict) -> NodeAttributes:
+    def copy_update(self, pkg_info: pkg_t) -> NodeAttributes:
         """Returns a copy of itself with updated attributes"""
         new_attr = deepcopy(self)
         new_attr.update_attr(pkg_info)
         return new_attr
 
-    def update_attr(self, pkg_info: dict):
+    def update_attr(self, pkg_info: pkg_t):
         """Update attributes of object with pkg_info"""
         self.depends += listify_element(pkg_info, DEPENDS_ATTR_KEY)
         self.rdepends += listify_element(pkg_info, RDEPENDS_ATTR_KEY)
@@ -76,6 +80,7 @@ class NodeAttributes:
         self.check_fmt = pkg_info.get(CHECK_ATTR_KEY, self.check_fmt)
         self.pull_from_gh = pkg_info.get(PULL_GH_API, self.pull_from_gh)
 
+    @override
     def __str__(self):
         mstr = stringify(vars(self))
         if len(mstr) == 0:
@@ -85,18 +90,18 @@ class NodeAttributes:
 
 class PackageNode:
     def __init__(
-        self, key_name: str, pkg_info: Union[dict, str], parent_attr: NodeAttributes
+        self, key_name: str, pkg_info: pkg_t|str, parent_attr: NodeAttributes
     ):
-        self.is_installed = False
-        self._key_name = key_name
-        self.install_cmd = None
-        self.check_cmd = None
-        self.gh_repo = None
+        self.is_installed: bool = False
+        self._key_name: str = key_name
+        self.install_cmd: str|None = None
+        self.check_cmd: str|None = None
+        self.gh_repo: str|None = None
 
         if isinstance(pkg_info, str):
             pkg_info = {"name": pkg_info}
 
-        self.attr = parent_attr.copy_update(pkg_info)
+        self.attr: NodeAttributes = parent_attr.copy_update(pkg_info)
 
         try:
             if self.attr.pull_from_gh:
@@ -121,13 +126,14 @@ class PackageNode:
             print(f"Can't format check format. {self.attr.check_fmt}, {pkg_info}")
             raise
 
-        self.name = pkg_info.get("name", None)
-        self.wrk_dir = (
+        self.name: str|None = pkg_info.get("name", None)
+        self.wrk_dir: str|None = (
             os.path.expanduser(pkg_info["dir"]) if "dir" in pkg_info else None
         )
-        self.pre_cmds = listify_element(pkg_info, "pre_cmds")
-        self.cmds = listify_element(pkg_info, "cmds")
+        self.pre_cmds: list[str] = listify_element(pkg_info, "pre_cmds")
+        self.cmds: list[str] = listify_element(pkg_info, "cmds")
 
+    @override
     def __str__(self):
         return stringify(vars(self))
 
@@ -147,7 +153,7 @@ class PackageNode:
             raise
         return installed
 
-    def _run_cmds(self, cmds: List[str]):
+    def _run_cmds(self, cmds: list[str]):
         for cmd in cmds:
             cmd_list = cmd.split()
             if cmd_list[0] == "cd":
@@ -157,9 +163,9 @@ class PackageNode:
                 print(f"cd'ing to {dest}")
                 os.chdir(dest)
             else:
-                subprocess.run(cmd, shell=True, check=True)
+                _ = subprocess.run(cmd, shell=True, check=True)
 
-    def install(self, pkg_dict, forced: bool = False) -> List[str]:
+    def install(self, pkg_dict: dict[str, PackageNode], forced: bool = False) -> list[str]:
         """Install if not already installed
 
         return: list of newly installed packages
@@ -169,7 +175,7 @@ class PackageNode:
             return []
 
         print(f"\nInstalling {self._key_name}")
-        new_pkgs = []
+        new_pkgs: list[str] = []
 
         # Install all depends
         for pkg in self.attr.depends:
@@ -185,7 +191,7 @@ class PackageNode:
         try:
             if self.attr.pull_from_gh:
                 print(f"Pulling {self.gh_repo}")
-                subprocess.run(f"wget {self.gh_repo}", shell=True, check=True)
+                _ = subprocess.run(f"wget {self.gh_repo}", shell=True, check=True)
 
             if len(self.pre_cmds) > 0:
                 print("Running pre-commands")
@@ -193,7 +199,7 @@ class PackageNode:
 
             if self.install_cmd is not None:
                 print("Running install command")
-                subprocess.run(self.install_cmd, shell=True, check=True)
+                _ = subprocess.run(self.install_cmd, shell=True, check=True)
 
             if len(self.cmds) > 0:
                 print("Running commands")
@@ -218,14 +224,14 @@ class PackageNode:
 
 class LocalStateHandler:
     def __init__(self):
-        self.install_yml = Path(
+        self.install_yml: Path = Path(
             os.path.expanduser("~/.local/state/pkg_env/installed.yml")
         )
         self.install_yml.parent.mkdir(parents=True, exist_ok=True)
 
-        self.installed_list = self._read_yaml()
+        self.installed_list: list[Any] = self._read_yaml()
 
-    def _read_yaml(self) -> List[str]:
+    def _read_yaml(self) -> list[Any]:
         """Get currently install objects from cfg file"""
         if not self.install_yml.exists():
             return []
@@ -233,7 +239,7 @@ class LocalStateHandler:
         with self.install_yml.open("r") as stream:
             return yaml.load(stream, Loader=Loader)
 
-    def add_pkgs(self, pkgs: List[str], quiet: bool = False):
+    def add_pkgs(self, pkgs: list[str], quiet: bool = False):
         """Update yaml with newly installed packages"""
         if len(pkgs) == 0:
             return
@@ -251,7 +257,7 @@ class LocalStateHandler:
             print(f"Failed to add {self.installed_list}")
             raise
 
-    def remove_pkgs(self, pkgs: Set[str], quiet: bool = False):
+    def remove_pkgs(self, pkgs: set[str], quiet: bool = False):
         if not quiet:
             for pkg in filter(lambda x: x not in self.installed_list, pkgs):
                 print(f"{pkg} not in yaml")
@@ -267,13 +273,13 @@ class LocalStateHandler:
 
 
 class PackageManager:
-    def __init__(self):
-        self.local_state = LocalStateHandler()
-        self.pkg_dict = build_dependency_dict()
+    def __init__(self, installs_file: str):
+        self.local_state: LocalStateHandler = LocalStateHandler()
+        self.pkg_dict: dict[str, PackageNode] = build_dependency_dict(installs_file)
 
         self.update_pkg_dict(adds=self.local_state.installed_list, quiet=True)
 
-    def get_list(self, sub_cmd: str) -> List[str]:
+    def get_list(self, sub_cmd: str) -> list[str]:
         if sub_cmd == "curr":
             pkgs_list = self.local_state.installed_list
         elif sub_cmd == "new":
@@ -284,9 +290,9 @@ class PackageManager:
         pkgs.sort()
         return pkgs
 
-    def cmd_check(self, pkgs: List[str]):
-        add_pkgs: List[str] = []
-        remove_pkgs: List[str] = []
+    def cmd_check(self, pkgs: list[str]):
+        add_pkgs: list[str] = []
+        remove_pkgs: list[str] = []
 
         if "all" in pkgs:
             pkgs = list(self.pkg_dict.keys())
@@ -318,7 +324,7 @@ class PackageManager:
                 print(f"removes: {remove_pkgs}")
         self.update_pkg_dict(add_pkgs, remove_pkgs)
 
-    def cmd_install(self, pkgs: List[str]):
+    def cmd_install(self, pkgs: list[str]):
         for pkg in pkgs:
             assert pkg in self.pkg_dict, f'"{pkg}" is not a valid package'
             installed = []
@@ -329,7 +335,7 @@ class PackageManager:
             finally:
                 self.local_state.add_pkgs(installed)
 
-    def cmd_update(self, cmd, pkgs: List[str]):
+    def cmd_update(self, cmd: str, pkgs: list[str]):
         old_list = set(self.local_state.installed_list)
         if cmd == "add":
             self.update_pkg_dict(adds=pkgs)
@@ -342,17 +348,17 @@ class PackageManager:
 
     def update_pkg_dict(
         self,
-        adds: List[str] = [],
-        removes: List[str] = [],
+        adds: list[str]|None = None,
+        removes: list[str]|None = None,
         quiet: bool = False,
     ):
-        if len(adds) > 0:
+        if adds is not None:
             self.local_state.add_pkgs(adds, quiet)
             for pkg in adds:
                 if pkg in self.pkg_dict:
                     self.pkg_dict[pkg].is_installed = True
 
-        if len(removes) > 0:
+        if removes is not None:
             self.local_state.remove_pkgs(set(removes), quiet)
             for pkg in removes:
                 if pkg in self.pkg_dict:
@@ -362,15 +368,16 @@ class PackageManager:
 class PackageCompleter(NestedCompleter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.packages: Dict[str, List[str]] = {}
+        self.packages: dict[str, str] = {}
 
-    def add_list_cmd(self, cmd):
-        self.get_list = cmd
+    def add_list_cmd(self, cmd: Callable[[str], list[str]]):
+        self.get_list: Callable[[str], list[str]] = cmd
 
-    def add_pkg_list(self, entry: str, list_cmd):
+    def add_pkg_list(self, entry: str, list_cmd: str):
         self.packages[entry] = list_cmd
 
-    def get_completions(self, document, complete_event):
+    @override
+    def get_completions(self, document: Document, complete_event: CompleteEvent):
         yield from super().get_completions(document, complete_event)
 
         if len(document.text.split()) > 0:
@@ -381,27 +388,24 @@ class PackageCompleter(NestedCompleter):
                     yield from cmp.get_completions(document, complete_event)
 
 
-def listify_element(ele_dict, name) -> List[str]:
+def listify_element(ele_dict: pkg_t, name: str) -> list[str]:
     """Returns list version of a specific entry"""
-    entry: Union[List[str], str] = ele_dict.get(name, [])
+    entry: list[str]|str = ele_dict.get(name, [])
     return [entry] if isinstance(entry, str) else entry
 
 
-def stringify(class_dict: dict) -> str:
+def stringify(class_dict: dict[str, Any]) -> str:
     """Convert class dict to string"""
-    is_valid = lambda n, v: not (
-        n.startswith("__")
-        or (v is None)
-        or (isinstance(v, (list, tuple)) and len(v) == 0)
-    )
-    return ", ".join([f"{k}: {v}" for (k, v) in class_dict.items() if is_valid(k, v)])
+    return ", ".join(
+        [f"{k}: {v}" for (k, v) in class_dict.items()
+         if (k.startswith("__") or (v is None) or (isinstance(v, (list, tuple)) and len(v) == 0))])
 
 
-def parse_category(packages: dict) -> dict:
+def parse_category(packages: dict) -> dict[str, PackageNode]:
     """Parse packge descriptions"""
 
     # Get archetype attributes
-    pkg_dict: dict = {}
+    pkg_dict = {}
     arch_attr = NodeAttributes(packages)
     for key, value in packages.items():
         if key[0] == "_":
@@ -412,9 +416,9 @@ def parse_category(packages: dict) -> dict:
     return pkg_dict
 
 
-def build_dependency_dict() -> Dict[str, PackageNode]:
+def build_dependency_dict(installs_file: str) -> dict[str, PackageNode]:
     """Parse insalls yaml and build package dependency dict"""
-    with open(INSTALLS_FILE, "r") as stream:
+    with open(installs_file, "r") as stream:
         installs = yaml.load(stream, Loader=Loader)
 
     # Delete tmp dir
@@ -424,7 +428,7 @@ def build_dependency_dict() -> Dict[str, PackageNode]:
         shutil.rmtree(tmp_dir)
 
     # archetype
-    pkg_dict: dict = {}
+    pkg_dict = {}
     for archetype, packages in installs.items():
         if archetype[0] == "_":
             continue
@@ -433,7 +437,7 @@ def build_dependency_dict() -> Dict[str, PackageNode]:
     return pkg_dict
 
 
-def get_gh_latest(repo: str, pkg_glob: str) -> (str, str):
+def get_gh_latest(repo: str, pkg_glob: str) -> tuple[str, str]:
     """Uses github's api to search the releases for a package"""
     name = None
     addr = None
@@ -449,6 +453,7 @@ def get_gh_latest(repo: str, pkg_glob: str) -> (str, str):
             addr = download["browser_download_url"]
             name = download["name"]
     assert None not in (name, addr), f"No matches found for {pkg_glob} in {resp}"
+    assert isinstance(name, str) and isinstance(addr, str)
 
     return name, addr
 
@@ -470,6 +475,15 @@ The following are only used to manipulate the yaml file that tracks the installe
 
 def main():
     """Main Entry Point"""
+    os_id = platform.freedesktop_os_release()["ID"]
+    if os_id == "ubuntu":
+        default_yaml = "installs.yml"
+    elif os_id in ("endeavouros", "arch"):
+        default_yaml = "arch_installs.yml"
+    else:
+        print(f"OS {os_id} not supported")
+        return 1
+
     parser = argparse.ArgumentParser("Package Installer")
     parser.add_argument(
         "-l",
@@ -478,9 +492,17 @@ def main():
         default=None,
         help="List packages",
     )
+    parser.add_argument(
+        "-i",
+        "--install-file",
+        default=default_yaml,
+        help="Yaml install file",
+    )
     args = parser.parse_args()
 
-    pkg = PackageManager()
+    print(f"Using {args.install_file}")
+
+    pkg = PackageManager(args.install_file)
 
     if args.list is not None:
         pkgs_list = pkg.get_list(args.list)
@@ -504,7 +526,7 @@ def main():
         "exit": None,
     }
 
-    completer = PackageCompleter.from_nested_dict(base_cmds)
+    completer: PackageCompleter = PackageCompleter.from_nested_dict(base_cmds)
     completer.add_list_cmd(pkg.get_list)
     completer.add_pkg_list("check", "all")
     completer.add_pkg_list("install", "new")

@@ -161,9 +161,6 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# Source task auto complete as well
-eval "$(task --completion bash)"
-
 # Source local bash rc file if available
 if [ -f ~/.localrc ]; then
   . ~/.localrc
@@ -249,7 +246,9 @@ export PATH=~/.local/bin:"$PATH"
 . "$HOME/.atuin/bin/env"
 eval "$(atuin init bash --disable-up-arrow)"
 
+# Source task auto complete as well
+eval "$(task --completion bash)"
+
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-

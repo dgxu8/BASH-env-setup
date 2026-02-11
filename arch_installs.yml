@@ -1,0 +1,164 @@
+_dirs_aliases:
+  - &tmp_dir ~/Downloads/setup
+
+_base_install_node: &base
+  __depends__: none
+  __rdepends__: none
+  _check_cmd: none
+  _install_fmt: none
+  dir: none
+  pre_cmds: none
+  name: none
+  cmds: none
+
+# If no name, assume entry is string
+# cmds is expected to be a list
+basic_pacman:
+  _install_fmt: "sudo pacman -S {name}"
+  _check_fmt: "pacman -Q {name}"
+  ripgrep: ripgrep
+  fd: fd
+  cmake: cmake
+  libevent: libevent-dev
+  libncurses5: libncurses5-dev
+  meld: meld
+  lua: lua
+  bear: bear
+  npm: npm
+  vim: vim
+  libglib2.0-dev: glib2-devel
+  liblua-dev: lua52
+  shellcheck: shellcheck
+  pynvim: python-pynvim
+  fzf: fzf
+  luarocks: luarocks
+  tldr: tldr
+  duf: duf
+  lsix: lsix
+  ffmpeg: ffmpeg
+  7zip: 7zip
+  resvg: resvg
+  poppler: poppler
+  jq: jq
+  wl_clipboard: wl-clipboard
+  batcat:
+    __rdepends__: bat_syntaxes
+    name: bat
+  lazygit:
+    __rdepends__: delta
+    name: lazygit
+  nvim:
+    __rdepends__: [pynvim, fzf, treesitter, deno, luarocks]
+    name: neovim
+  tmux:
+    __rdepends__: [tpm, tmux_resurrect]
+    name: tmux
+  yazi:
+    __rdepends__: [fd, rg, ffmpeg, 7zip, fzf, resvg, poppler, jq, wl_clipboard]
+    name: yazi
+
+basic_paru:
+  _install_fmt: "sudo paru -S {name}"
+  _check_fmt: "paru -Q {name}"
+  __depends__: paru
+  tio: tio
+
+basic_rust:
+  _install_fmt: "cargo install {name}"
+  _check_fmt: "cargo install --list | grep -w {name}"
+  # We don't lock the installs
+  __depends__: rust
+  gitui: gitui
+  difftastic: difftastic
+  eza: eza
+  delta: git-delta
+  git-graph: git-graph
+  diskus: diskus
+  treesitter: tree-sitter-cli
+
+basic_custom:
+  _check_fmt: "which {name}"
+
+  rust:
+    name: cargo
+    description: rust lang
+    cmds: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+  atuin:
+    __depends__: bash-preexec-sh
+    name: atuin
+    description: Better bash history
+    cmds:
+      - curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
+
+  gitprompt:
+    _check_fmt: "test -f ~/.git-prompt.sh"
+    dir: *tmp_dir
+    cmds:
+      - git clone https://github.com/git/git.git --no-checkout git_completion --depth 1
+      - cd git_completion
+      - git sparse-checkout init --cone
+      - git sparse-checkout set contrib/completion
+      - git checkout
+      - cp contrib/completion/git-prompt.sh ~/.git-prompt.sh
+
+  tpm:
+    _check_fmt: "test -d ~/.tmux/plugins/tpm"
+    description: TMUX plugin manager
+    cmds: git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+  tmux_resurrect:
+    _check_fmt: "test -d ~/.tmux/tmux-resurrect"
+    cmds: git clone https://github.com/tmux-plugins/tmux-resurrect
+          ~/.tmux/tmux-resurrect
+  bat_syntaxes:
+    _check_fmt: "bat --list-languages | grep BitBake"
+    cmds:
+      - mkdir -p ~/.config/bat/syntaxes
+      - cd ~/.config/bat/syntaxes
+      - git clone https://github.com/Driim/bitbake-syntax
+      - bat cache --build
+
+  bash-preexec-sh:
+    name: bash_preexec
+    cmds:
+      - curl https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh -o ~/.bash-preexec.sh
+      # - echo '[[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh' >> ~/.bashrc
+
+  wezterm-sh:
+    _check_fmt: "ls {name}"
+    name: ~/.wezterm.sh
+    cmds:
+      - curl https://raw.githubusercontent.com/wez/wezterm/main/assets/shell-integration/wezterm.sh -o ~/.wezterm.sh
+
+  deno:
+    name: deno
+    description: Some JS thing that is needed for peek.nvim (markdown previewer)
+    cmds: curl -fsSL https://deno.land/install.sh | sh
+
+  taskfile:
+    name: task
+    description: Runs misc command line tasks that are defined in a Taskfile.yaml
+    cmds:
+      - sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b ~/.local/bin
+
+  luarocks:
+    __depends__: [lua, liblua-dev]
+    dir: *tmp_dir
+    name: luarocks
+    description: Lua package manager
+    cmds:
+      - wget https://luarocks.org/releases/luarocks-3.11.1.tar.gz
+      - tar zxpf luarocks-3.11.1.tar.gz
+      - cd luarocks-3.11.1
+      - ./configure && make && sudo make install
+      - sudo luarocks install luasec
+
+  paru:
+    dir: *tmp_dir
+    name: paru
+    description: Arch ARU package manager
+    cmds:
+      - git clone https://aur.archlinux.org/paru.git
+      - cd paru
+      - makepkg -si
