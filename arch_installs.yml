@@ -48,7 +48,7 @@ basic_pacman:
     __rdepends__: delta
     name: lazygit
   nvim:
-    __rdepends__: [pynvim, fzf, treesitter, deno, luarocks]
+    __rdepends__: [pynvim, fzf, treesitter, luarocks]
     name: neovim
   tmux:
     __rdepends__: [tpm, tmux_resurrect]
@@ -130,11 +130,6 @@ basic_custom:
     name: ~/.wezterm.sh
     cmds:
       - curl https://raw.githubusercontent.com/wez/wezterm/main/assets/shell-integration/wezterm.sh -o ~/.wezterm.sh
-
-  deno:
-    name: deno
-    description: Some JS thing that is needed for peek.nvim (markdown previewer)
-    cmds: curl -fsSL https://deno.land/install.sh | sh
 
   taskfile:
     name: task

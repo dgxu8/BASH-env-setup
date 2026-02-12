@@ -1,4 +1,4 @@
-local plugin = {"ggandor/leap.nvim"}
+local plugin = { url = "https://codeberg.org/andyg/leap.nvim" }
 
 plugin.dependencies = {
     {"tpope/vim-repeat"},
@@ -6,21 +6,40 @@ plugin.dependencies = {
 
 plugin.enabled = true
 
-plugin.keys = {
-    { "s", mode = { "n", "x", "o" }, desc = "Leap forward to" },
-    { "S", mode = { "n", "x", "o" }, desc = "Leap backward to" },
-    { "gs", mode = { "n", "x", "o" }, desc = "Leap from windows" },
-}
+vim.keymap.set({'n', 'x', 'o'}, 's', '<Plug>(leap)')
+vim.keymap.set('n',             'S', '<Plug>(leap-from-window)')
 
-function plugin.config(_, opts)
-    local leap = require("leap")
-    leap.create_default_mappings()
-    for k, v in pairs(opts) do
-        leap.opts[k] = v
+function plugin.config()
+    -- Highly recommended: define a preview filter to reduce visual noise
+    -- and the blinking effect after the first keypress
+    -- (see `:h leap.opts.preview`).
+    -- For example, skip preview if the first character of the match is
+    -- whitespace or is in the middle of an alphabetic word:
+    require('leap').opts.preview = function(ch0, ch1, ch2)
+        return not (
+            ch1:match('%s')
+            or (ch0:match('%a') and ch1:match('%a') and ch2:match('%a'))
+        )
     end
-    leap.opts.highlight_unlabeled_phase_one_targets = true
-    leap.opts.special_keys.prev_target = '<backspace>'
-    leap.opts.special_keys.prev_group = '<backspace>'
+
+    -- Define equivalence classes for brackets and quotes, in addition to
+    -- the default whitespace group:
+    require('leap').opts.equivalence_classes = { ' \t\r\n', '([{', ')]}', '\'"`' }
+
+    -- Use the traversal keys to repeat the previous motion without
+    -- explicitly invoking Leap:
+    require('leap.user').set_repeat_keys('<enter>', '<backspace>')
+
+    -- Automatic paste after remote yank operations:
+    vim.api.nvim_create_autocmd('User', {
+        pattern = 'RemoteOperationDone',
+        group = vim.api.nvim_create_augroup('LeapRemote', {}),
+        callback = function(event)
+            if vim.v.operator == 'y' and event.data.register == '"' then
+                vim.cmd('normal! p')
+            end
+        end,
+    })
 end
 
 return plugin

@@ -1,7 +1,5 @@
 local plugin = {"nvim-telescope/telescope.nvim"}
 
-plugin.branch = "0.1.x"
-
 plugin.dependencies = {
     {"nvim-lua/plenary.nvim"},
     {"nvim-telescope/telescope-fzf-native.nvim", build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build"},

@@ -1,9 +1,10 @@
 local lsp_list = {
     "clangd",
-    "pylsp",
+    "basedpyright",
     "ruff",
     "lua_ls",
     "marksman",
+    "rust_analyzer",
 }
 local plugin = {
     "mason-org/mason-lspconfig.nvim",
@@ -23,24 +24,7 @@ vim.lsp.config('clangd', {
     cmd = {"clangd", "--function-arg-placeholders=0", "--offset-encoding=utf-16"},
 })
 
-vim.lsp.config('pylsp', {
-    flags = {
-        allow_incremenetal_sync = false
-    },
-    settings = {
-        pylsp = {
-            plugins = {
-                pylint = {enabled = false},
-                jedi = {
-                    environment = "/usr/bin/python3",
-                    auto_import_modules = {},
-                },
-                mccabe = {enabled = false},
-                yapf = {enabled = false},
-            },
-        },
-    },
-})
+-- vim.lsp.config('basedpyright', { })
 
 vim.lsp.config('lua_ls', {
     settings = {
