@@ -1,42 +1,43 @@
 os:
   editPreset: 'vim'
-
 git:
   branchLogCmd: 'git log --graph --color=always --abbrev-commit --decorate --pretty=oneline {{branchName}} --'
-  allBranchesLogCmd: 'git graph --color=always --model=simple --style=round'
-  paging:
-    colorArg: always
-    pager: delta -n --dark --paging=never
-    #externalDiffCommand: difft --color=always --display=inline
-
+  pagers:
+    - colorArg: always
+      pager: delta -n --dark --paging=never
+      #externalDiffCommand: difft --color=always --display=inline
+  allBranchesLogCmds:
+    - git graph --color=always --model=simple --style=round
+  autoForwardBranches: none
 gui:
   nerdFontsVersion: "3"
-
 keybinding:
   universal:
     optionMenu: 'x'
     filteringMenu: '<c-f>'
-
   commits:
     moveDownCommit: 'J'
     moveUpCommit: 'K'
     openLogMenu: <c-/>
-
+    viewResetOptions: <disabled>
 customCommands:
   - key: 'E'
     description: 'Add empty commit'
     context: 'commits'
     command: 'git commit --allow-empty -m "empty"'
     loadingText: 'Committing empty commit...'
-
-  - key: 'P'
-    description: 'Push to gerrit'
-    command: 'git pushgerrit {{.SelectedLocalCommit.Sha}}'
-    context: 'commits'
-    loadingText: 'Pushing'
-
   - key: '<c-s>'
-    description: Sign off last commit
+    description: 'Adds a Signed-off-by line to selected commit'
     context: 'commits'
-    command: 'git commit --amend --signoff'
-    subprocess: true
+    command: 'git commit --no-edit --signoff --fixup=reword:{{.SelectedLocalCommit.Sha}} && GIT_SEQUENCE_EDITOR="cat > /dev/null" git rebase --interactive --autostash --keep-empty --rebase-merges --autosquash {{.SelectedLocalCommit.Sha}}^'
+    output: log
+  - key: 'N'
+    description: 'Create/drop branch w/ upstream set to current upstream'
+    context: 'commits'
+    prompts:
+      - type: 'input'
+        title: 'New branch name tracking: {{.SelectedLocalBranch.UpstreamRemote}}/{{.SelectedLocalBranch.UpstreamBranch}}'
+        key: 'BranchName'
+    command: 'git switch -c {{.Form.BranchName}} {{.SelectedLocalCommit.Sha}} && git branch --set-upstream-to={{.SelectedLocalBranch.UpstreamRemote}}/{{.SelectedLocalBranch.UpstreamBranch}}'
+
+# 'UPSTREAM=$(git rev-parse --abbrev-ref --symbolic-full-name @{u}) && git switch -c test {{.SelectedLocalCommit.Sha}} && git branch --set-upstream-to=$UPSTREAM'
