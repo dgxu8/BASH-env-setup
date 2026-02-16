@@ -21,6 +21,11 @@ keybinding:
     openLogMenu: <c-/>
     viewResetOptions: <disabled>
 customCommands:
+  - key: 'P'
+    command: 'git push `git for-each-ref --format="%(upstream:remotename)" "$(git symbolic-ref -q HEAD)"` {{.SelectedCommit.Hash}}:`git for-each-ref --format="%(upstream:remoteref)" "$(git symbolic-ref -q HEAD)"`'
+    context: "commits"
+    description: "Push selected commit"
+    output: log
   - key: 'E'
     description: 'Add empty commit'
     context: 'commits'

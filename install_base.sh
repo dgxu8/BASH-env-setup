@@ -4,6 +4,8 @@ install_ubuntu() {
 	sudo apt update
 	sudo apt upgrade
 	sudo apt install ca-certificates curl gnupg
+	sudo apt install build-essential
+	sudo apt install python3-pip
 
 	# Needed for gpg installs (like nodejs)
 	sudo mkdir -m 0755 -p /etc/apt/keyrings/
@@ -11,6 +13,7 @@ install_ubuntu() {
 
 install_endeavouros() {
 	sudo pacman -Syu
+	sudo pacman -S base-devel
 	makepkg -si
 }
 

@@ -23,12 +23,13 @@ basic_apt:
   git_gui: git-gui
   clang: clang
   curl: curl # type -p curl to check if we have it
-  libclang: libclang-10-dev
+  libclang: libclang-dev
   cmake: cmake
   libevent: libevent-dev
   libncurses5: libncurses5-dev
   meld: meld
   lua: lua5.3
+  lua51: lua5.1
   pkgcfg: pkg-config
   libfmt-dev: libfmt-dev
   libspdlog-dev: libspdlog-dev
@@ -43,10 +44,11 @@ basic_apt:
       - echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
       - sudo apt update
     name: nodejs
-  venv: python3.8-venv
+  venv: python3-venv
   libsqlite3-dev: libsqlite3-dev
   libglib2.0-dev: libglib2.0-dev
   liblua-dev: liblua5.3-dev
+  liblua5.1-dev: liblua5.1-dev
   freetype: libfreetype6-dev
   libjpeg: libjpeg-dev
   librsvg: librsvg2-dev
@@ -55,6 +57,10 @@ basic_apt:
   7zip: 7zip
   jq: jq
   poppler: poppler-utils
+  make: make
+  gcc: gcc
+  unzip: unzip
+  bison: bison
 
 wsl_apt:
   _install_fmt: "sudo apt install {name}"
@@ -85,9 +91,11 @@ basic_rust:
   diskus: diskus
   resvg: resvg
   yazi:
-    __rdepends__: [fd, rg, ffmpeg, 7zip, fzf, resvg, poppler, jq]
+    __rdepends__: [fd, ripgrep, 7zip, fzf, resvg, poppler, jq]
     name: yazi-build
-  treesitter: tree-sitter-cli
+  treesitter:
+    __depends__: libclang
+    name: tree-sitter-cli
 
 # All NPM installs are global
 basic_npm:
@@ -121,7 +129,7 @@ gh_debian_releases:
     dir: *tmp_dir
     name: lazygit
     repo: jesseduffield/lazygit
-    glob: lazygit_*_Linux_x86_64.tar.gz
+    glob: lazygit_*_linux_x86_64.tar.gz
     cmds:
       - sudo install lazygit /usr/local/bin
 
@@ -153,7 +161,7 @@ gh_debian_releases:
       - meson install -C build
 
   tmux:
-    __depends__: [libevent, libncurses5]
+    __depends__: [libevent, libncurses5, bison]
     __rdepends__: [tpm, tmux_resurrect]
     _install_fmt: "tar -zxf {pkg_name}"
     dir: *tmp_dir
@@ -193,7 +201,7 @@ basic_custom:
 
   nvim:
     # maybe ripgrep/fd
-    __rdepends__: &nvim_rdepends [pynvim, fzf, treesitter, luarocks]
+    __rdepends__: &nvim_rdepends [pynvim, fzf, treesitter, luarocks, cmake, venv]
     dir: *tmp_dir
     name: nvim
     cmds:
@@ -238,6 +246,7 @@ basic_custom:
 
   vim:
     dir: *tmp_dir
+    __depends__: [gcc, make, libncurses5]
     name: vim
     cmds:
       - git clone https://github.com/vim/vim.git
@@ -311,7 +320,7 @@ basic_custom:
       - sudo make install
 
   luarocks:
-    __depends__: [lua, liblua-dev]
+    __depends__: [lua5.1, liblua5.1-dev, unzip, libssl-dev]
     dir: *tmp_dir
     name: luarocks
     description: Lua package manager

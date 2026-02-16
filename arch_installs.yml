@@ -48,13 +48,13 @@ basic_pacman:
     __rdepends__: delta
     name: lazygit
   nvim:
-    __rdepends__: [pynvim, fzf, treesitter, luarocks]
+    __rdepends__: [pynvim, fzf, treesitter, luarocks, cmake]
     name: neovim
   tmux:
     __rdepends__: [tpm, tmux_resurrect]
     name: tmux
   yazi:
-    __rdepends__: [fd, rg, ffmpeg, 7zip, fzf, resvg, poppler, jq, wl_clipboard]
+    __rdepends__: [fd, ripgrep, ffmpeg, 7zip, fzf, resvg, poppler, jq, wl_clipboard]
     name: yazi
 
 basic_paru:
