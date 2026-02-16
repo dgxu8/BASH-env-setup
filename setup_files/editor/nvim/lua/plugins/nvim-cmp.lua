@@ -3,7 +3,7 @@ return {
         "hrsh7th/nvim-cmp",
 
         version = false,
-        event = "insertenter",
+        event = "InsertEnter",
 
         dependencies = {
             -- sources
@@ -24,14 +24,9 @@ return {
         },
 
         opts = function ()
-            -- vim.opt.completeopt = {"menu", "menuone", "noselect"}
-
             local cmp = require("cmp")
             local luasnip = require("luasnip")
-            local defaults = require("cmp.config.default")()
             local auto_select = false
-
-            -- require("luasnip.loaders.from_vscode").lazy_load()
 
             vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
 
@@ -44,40 +39,73 @@ return {
             vim.api.nvim_set_hl(0, "CmpItemAbbrMatchFuzzy", { fg = "#82AAFF", bg = "NONE", bold = true })
             vim.api.nvim_set_hl(0, "CmpItemMenu", { fg = "#C792EA", bg = "NONE", italic = true })
 
-            vim.api.nvim_set_hl(0, "CmpItemKindField", { fg = "#EED8DA", bg = "#B5585F" })
-            vim.api.nvim_set_hl(0, "CmpItemKindProperty", { fg = "#EED8DA", bg = "#B5585F" })
-            vim.api.nvim_set_hl(0, "CmpItemKindEvent", { fg = "#EED8DA", bg = "#B5585F" })
+            -- Set icon color
+            vim.api.nvim_set_hl(0, "CmpItemKindFieldIcon", { fg = "#EED8DA", bg = "#B5585F" })
+            vim.api.nvim_set_hl(0, "CmpItemKindPropertyIcon", { fg = "#EED8DA", bg = "#B5585F" })
+            vim.api.nvim_set_hl(0, "CmpItemKindEventIcon", { fg = "#EED8DA", bg = "#B5585F" })
 
-            vim.api.nvim_set_hl(0, "CmpItemKindText", { fg = "#C3E88D", bg = "#9FBD73" })
-            vim.api.nvim_set_hl(0, "CmpItemKindEnum", { fg = "#C3E88D", bg = "#9FBD73" })
-            vim.api.nvim_set_hl(0, "CmpItemKindKeyword", { fg = "#C3E88D", bg = "#9FBD73" })
+            vim.api.nvim_set_hl(0, "CmpItemKindTextIcon", { fg = "#C3E88D", bg = "#9FBD73" })
+            vim.api.nvim_set_hl(0, "CmpItemKindEnumIcon", { fg = "#C3E88D", bg = "#9FBD73" })
+            vim.api.nvim_set_hl(0, "CmpItemKindKeywordIcon", { fg = "#C3E88D", bg = "#9FBD73" })
 
-            vim.api.nvim_set_hl(0, "CmpItemKindConstant", { fg = "#FFE082", bg = "#D4BB6C" })
-            vim.api.nvim_set_hl(0, "CmpItemKindConstructor", { fg = "#FFE082", bg = "#D4BB6C" })
-            vim.api.nvim_set_hl(0, "CmpItemKindReference", { fg = "#FFE082", bg = "#D4BB6C" })
+            vim.api.nvim_set_hl(0, "CmpItemKindConstantIcon", { fg = "#FFE082", bg = "#D4BB6C" })
+            vim.api.nvim_set_hl(0, "CmpItemKindConstructorIcon", { fg = "#FFE082", bg = "#D4BB6C" })
+            vim.api.nvim_set_hl(0, "CmpItemKindReferenceIcon", { fg = "#FFE082", bg = "#D4BB6C" })
 
-            vim.api.nvim_set_hl(0, "CmpItemKindFunction", { fg = "#EADFF0", bg = "#A377BF" })
-            vim.api.nvim_set_hl(0, "CmpItemKindStruct", { fg = "#EADFF0", bg = "#A377BF" })
-            vim.api.nvim_set_hl(0, "CmpItemKindClass", { fg = "#EADFF0", bg = "#A377BF" })
-            vim.api.nvim_set_hl(0, "CmpItemKindModule", { fg = "#EADFF0", bg = "#A377BF" })
-            vim.api.nvim_set_hl(0, "CmpItemKindOperator", { fg = "#EADFF0", bg = "#A377BF" })
+            vim.api.nvim_set_hl(0, "CmpItemKindFunctionIcon", { fg = "#EADFF0", bg = "#A377BF" })
+            vim.api.nvim_set_hl(0, "CmpItemKindStructIcon", { fg = "#EADFF0", bg = "#A377BF" })
+            vim.api.nvim_set_hl(0, "CmpItemKindClassIcon", { fg = "#EADFF0", bg = "#A377BF" })
+            vim.api.nvim_set_hl(0, "CmpItemKindModuleIcon", { fg = "#EADFF0", bg = "#A377BF" })
+            vim.api.nvim_set_hl(0, "CmpItemKindOperatorIcon", { fg = "#EADFF0", bg = "#A377BF" })
 
-            vim.api.nvim_set_hl(0, "CmpItemKindVariable", { fg = "#C5CDD9", bg = "#7E8294" })
-            vim.api.nvim_set_hl(0, "CmpItemKindFile", { fg = "#C5CDD9", bg = "#7E8294" })
+            vim.api.nvim_set_hl(0, "CmpItemKindVariableIcon", { fg = "#C5CDD9", bg = "#7E8294" })
+            vim.api.nvim_set_hl(0, "CmpItemKindFileIcon", { fg = "#C5CDD9", bg = "#7E8294" })
 
-            vim.api.nvim_set_hl(0, "CmpItemKindUnit", { fg = "#F5EBD9", bg = "#D4A959" })
-            vim.api.nvim_set_hl(0, "CmpItemKindSnippet", { fg = "#F5EBD9", bg = "#D4A959" })
-            vim.api.nvim_set_hl(0, "CmpItemKindFolder", { fg = "#F5EBD9", bg = "#D4A959" })
+            vim.api.nvim_set_hl(0, "CmpItemKindUnitIcon", { fg = "#F5EBD9", bg = "#D4A959" })
+            vim.api.nvim_set_hl(0, "CmpItemKindSnippetIcon", { fg = "#F5EBD9", bg = "#D4A959" })
+            vim.api.nvim_set_hl(0, "CmpItemKindFolderIcon", { fg = "#F5EBD9", bg = "#D4A959" })
 
-            vim.api.nvim_set_hl(0, "CmpItemKindMethod", { fg = "#DDE5F5", bg = "#6C8ED4" })
-            vim.api.nvim_set_hl(0, "CmpItemKindValue", { fg = "#DDE5F5", bg = "#6C8ED4" })
-            vim.api.nvim_set_hl(0, "CmpItemKindEnumMember", { fg = "#DDE5F5", bg = "#6C8ED4" })
+            vim.api.nvim_set_hl(0, "CmpItemKindMethodIcon", { fg = "#DDE5F5", bg = "#6C8ED4" })
+            vim.api.nvim_set_hl(0, "CmpItemKindValueIcon", { fg = "#DDE5F5", bg = "#6C8ED4" })
+            vim.api.nvim_set_hl(0, "CmpItemKindEnumMemberIcon", { fg = "#DDE5F5", bg = "#6C8ED4" })
 
-            vim.api.nvim_set_hl(0, "CmpItemKindInterface", { fg = "#D8EEEB", bg = "#58B5A8" })
-            vim.api.nvim_set_hl(0, "CmpItemKindColor", { fg = "#D8EEEB", bg = "#58B5A8" })
-            vim.api.nvim_set_hl(0, "CmpItemKindTypeParameter", { fg = "#D8EEEB", bg = "#58B5A8" })
+            vim.api.nvim_set_hl(0, "CmpItemKindInterfaceIcon", { fg = "#D8EEEB", bg = "#58B5A8" })
+            vim.api.nvim_set_hl(0, "CmpItemKindColorIcon", { fg = "#D8EEEB", bg = "#58B5A8" })
+            vim.api.nvim_set_hl(0, "CmpItemKindTypeParameterIcon", { fg = "#D8EEEB", bg = "#58B5A8" })
 
-            vim.api.nvim_set_hl(0, "CmpItemKindCopilot", { fg = "#e4f0df", bg ="#569e36" })
+            -- Set kind string color's text to match background from icon
+            vim.api.nvim_set_hl(0, "CmpItemKindField", { fg = "#B5585F", bg = "NONE" })
+            vim.api.nvim_set_hl(0, "CmpItemKindProperty", { fg = "#B5585F", bg = "NONE" })
+            vim.api.nvim_set_hl(0, "CmpItemKindEvent", { fg = "#B5585F", bg = "NONE" })
+
+            vim.api.nvim_set_hl(0, "CmpItemKindText", { fg = "#9FBD73", bg = "NONE" })
+            vim.api.nvim_set_hl(0, "CmpItemKindEnum", { fg = "#9FBD73", bg = "NONE" })
+            vim.api.nvim_set_hl(0, "CmpItemKindKeyword", { fg = "#9FBD73", bg = "NONE" })
+
+            vim.api.nvim_set_hl(0, "CmpItemKindConstant", { fg = "#D4BB6C", bg = "NONE" })
+            vim.api.nvim_set_hl(0, "CmpItemKindConstructor", { fg = "#D4BB6C", bg = "NONE" })
+            vim.api.nvim_set_hl(0, "CmpItemKindReference", { fg = "#D4BB6C", bg = "NONE" })
+
+            vim.api.nvim_set_hl(0, "CmpItemKindFunction", { fg = "#A377BF", bg = "NONE" })
+            vim.api.nvim_set_hl(0, "CmpItemKindStruct", { fg = "#A377BF", bg = "NONE" })
+            vim.api.nvim_set_hl(0, "CmpItemKindClass", { fg = "#A377BF", bg = "NONE" })
+            vim.api.nvim_set_hl(0, "CmpItemKindModule", { fg = "#A377BF", bg = "NONE" })
+            vim.api.nvim_set_hl(0, "CmpItemKindOperator", { fg = "#A377BF", bg = "NONE" })
+
+            vim.api.nvim_set_hl(0, "CmpItemKindVariable", { fg = "#7E8294", bg = "NONE" })
+            vim.api.nvim_set_hl(0, "CmpItemKindFile", { fg = "#7E8294", bg = "NONE" })
+
+            vim.api.nvim_set_hl(0, "CmpItemKindUnit", { fg = "#D4A959", bg = "NONE" })
+            vim.api.nvim_set_hl(0, "CmpItemKindSnippet", { fg = "#D4A959", bg = "NONE" })
+            vim.api.nvim_set_hl(0, "CmpItemKindFolder", { fg = "#D4A959", bg = "NONE" })
+
+            vim.api.nvim_set_hl(0, "CmpItemKindMethod", { fg = "#6C8ED4", bg = "NONE" })
+            vim.api.nvim_set_hl(0, "CmpItemKindValue", { fg = "#6C8ED4", bg = "NONE" })
+            vim.api.nvim_set_hl(0, "CmpItemKindEnumMember", { fg = "#6C8ED4", bg = "NONE" })
+
+            vim.api.nvim_set_hl(0, "CmpItemKindInterface", { fg = "#58B5A8", bg = "NONE" })
+            vim.api.nvim_set_hl(0, "CmpItemKindColor", { fg = "#58B5A8", bg = "NONE" })
+            vim.api.nvim_set_hl(0, "CmpItemKindTypeParameter", { fg = "#58B5A8", bg = "NONE" })
 
             local has_words_before = function()
                 if vim.api.nvim_get_option_value("buftype", {}) == "prompt" then return false end
@@ -129,22 +157,20 @@ return {
                     {name = "luasnip", keyword_length = 2},
                 }),
                 formatting = {
-                    fields = { "kind", "abbr", "menu" },
+                    fields = { "icon", "abbr", "kind" },
                     format = function(entry, item)
                         local icons = require("lspkind").cmp_format({
-                            mode = "symbol_text", maxwith = 100, symbol_map = { Copilot = ""}
+                            mode = "symbol_text", maxwith = 100
                         })(entry, item)
+                        icons.icon = " " .. (icons.icon or "") .. " "
+                        icons.kind = "    (" .. (icons.kind or "") .. ")"
 
-                        -- splits the icon and menu strings. Icon will be in the front and menu will be in the back
-                        local strings = vim.split(icons.kind, "%s", { trimempty = true })
-                        icons.kind = " " .. (strings[1] or "") .. " "
-                        icons.menu = "    (" .. (strings[2] or "") .. ")"
-
-                        -- lazyvim junk to make the completion menu look nice
-                        if icons[item.kind] then
-                            item.kind = icons[item.kind] .. item.kind
+                        -- IDK what this "if" is used for
+                        if icons[item.icon] then
+                            item.icon = icons[item.icon] .. item.icon
                         end
 
+                        -- Abbreviating the name if it's too long
                         local widths = {
                             abbr = vim.g.cmp_widths and vim.g.cmp_widths.abbr or 70,
                             menu = vim.g.cmp_widths and vim.g.cmp_widths.menu or 70,
@@ -164,8 +190,12 @@ return {
                         winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,CursorLine:Visual,Search:None",
                         col_offset = -3,
                         side_padding = 0,
+                        border = 'rounded',
                     }),
-                    documentation = cmp.config.window.bordered(),
+                    documentation = cmp.config.window.bordered({
+                        winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,CursorLine:Visual,Search:None",
+                        border = 'rounded',
+                    }),
                 },
                 experimental = {
                     ghost_text = {
