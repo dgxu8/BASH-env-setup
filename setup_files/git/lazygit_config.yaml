@@ -9,6 +9,7 @@ git:
   allBranchesLogCmds:
     - git graph --color=always --model=simple --style=round
   autoForwardBranches: none
+  autoFetch: false
 gui:
   nerdFontsVersion: "3"
 keybinding:
