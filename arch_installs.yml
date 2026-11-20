@@ -34,6 +34,7 @@ basic_pacman:
   luarocks: luarocks
   tldr: tldr
   duf: duf
+  dust: dust
   lsix: lsix
   ffmpeg: ffmpeg
   7zip: 7zip
@@ -44,6 +45,7 @@ basic_pacman:
   batcat:
     __rdepends__: bat_syntaxes
     name: bat
+  delta: git-delta
   lazygit:
     __rdepends__: delta
     name: lazygit
@@ -71,10 +73,23 @@ basic_rust:
   gitui: gitui
   difftastic: difftastic
   eza: eza
-  delta: git-delta
   git-graph: git-graph
   diskus: diskus
   treesitter: tree-sitter-cli
+
+gh_releases:
+  _pull_from_gh: true  # Will automatically fill {pkg_name}, need to provide {repo} and {glob}
+  _check_fmt: "which {name}"
+  scc:
+    _install_fmt: "tar -zxf {pkg_name}"
+    dir: *tmp_dir
+    description: scc is a very fast accurate code counter with complexity calculations and
+      COCOMO estimates written in pure Go
+    name: scc
+    repo: boyter/scc
+    glob: scc_Linux_x86_64.tar.gz
+    cmds:
+      - sudo install scc /usr/local/bin/
 
 basic_custom:
   _check_fmt: "which {name}"

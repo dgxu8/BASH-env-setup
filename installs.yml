@@ -96,6 +96,8 @@ basic_rust:
   treesitter:
     __depends__: libclang
     name: tree-sitter-cli
+  dust:
+    name: du-dust
 
 # All NPM installs are global
 basic_npm:
@@ -183,6 +185,20 @@ gh_debian_releases:
     cmds:
       - cd shellcheck-*/
       - cp shellcheck ~/.local/bin/
+
+gh_releases:
+  _pull_from_gh: true  # Will automatically fill {pkg_name}, need to provide {repo} and {glob}
+  _check_fmt: "which {name}"
+  scc:
+    _install_fmt: "tar -zxf {pkg_name}"
+    dir: *tmp_dir
+    description: scc is a very fast accurate code counter with complexity calculations and
+      COCOMO estimates written in pure Go
+    name: scc
+    repo: boyter/scc
+    glob: scc_Linux_x86_64.tar.gz
+    cmds:
+      - sudo install scc /usr/local/bin/
 
 basic_custom:
   _check_fmt: "which {name}"

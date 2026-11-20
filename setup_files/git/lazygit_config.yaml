@@ -2,9 +2,9 @@ os:
   editPreset: 'vim'
 git:
   branchLogCmd: 'git log --graph --color=always --abbrev-commit --decorate --pretty=oneline {{branchName}} --'
-  pagers:
+  diffRenderers:
     - colorArg: always
-      pager: delta -n --dark --paging=never
+      command: delta --{{colorScheme}} -n --paging=never
       #externalDiffCommand: difft --color=always --display=inline
   allBranchesLogCmds:
     - git graph --color=always --model=simple --style=round
