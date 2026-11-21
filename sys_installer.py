@@ -1,7 +1,7 @@
 #!/usr/bin/env -S uv run --script
 #
 # /// script
-# requires-python = ">=3.8"
+# requires-python = ">=3.10"
 # dependencies = [
 #   "pyyaml",
 #   "prompt_toolkit",
@@ -21,7 +21,7 @@ from fnmatch import fnmatch
 from glob import glob
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Callable, override
+from typing import Any, Callable
 
 from prompt_toolkit.document import Document
 import requests
@@ -49,15 +49,13 @@ INSTALL_ATTR_KEY = "_install_fmt"
 CHECK_ATTR_KEY = "_check_fmt"
 PULL_GH_API = "_pull_from_gh"
 
-type pkg_t = dict[str, str]
-
 
 class InstallFailedError(Exception):
     pass
 
 
 class NodeAttributes:
-    def __init__(self, pkg_info: pkg_t|str):
+    def __init__(self, pkg_info: dict[str, str]|str):
         self.depends: list[str] = []
         self.rdepends: list[str] = []
         self.install_fmt: str|None = None
@@ -66,13 +64,13 @@ class NodeAttributes:
         if isinstance(pkg_info, dict):
             self.update_attr(pkg_info)
 
-    def copy_update(self, pkg_info: pkg_t) -> NodeAttributes:
+    def copy_update(self, pkg_info: dict[str, str]) -> NodeAttributes:
         """Returns a copy of itself with updated attributes"""
         new_attr = deepcopy(self)
         new_attr.update_attr(pkg_info)
         return new_attr
 
-    def update_attr(self, pkg_info: pkg_t):
+    def update_attr(self, pkg_info: dict[str, str]):
         """Update attributes of object with pkg_info"""
         self.depends += listify_element(pkg_info, DEPENDS_ATTR_KEY)
         self.rdepends += listify_element(pkg_info, RDEPENDS_ATTR_KEY)
@@ -80,7 +78,6 @@ class NodeAttributes:
         self.check_fmt = pkg_info.get(CHECK_ATTR_KEY, self.check_fmt)
         self.pull_from_gh = pkg_info.get(PULL_GH_API, self.pull_from_gh)
 
-    @override
     def __str__(self):
         mstr = stringify(vars(self))
         if len(mstr) == 0:
@@ -90,7 +87,7 @@ class NodeAttributes:
 
 class PackageNode:
     def __init__(
-        self, key_name: str, pkg_info: pkg_t|str, parent_attr: NodeAttributes
+        self, key_name: str, pkg_info: dict[str, str]|str, parent_attr: NodeAttributes
     ):
         self.is_installed: bool = False
         self._key_name: str = key_name
@@ -133,7 +130,6 @@ class PackageNode:
         self.pre_cmds: list[str] = listify_element(pkg_info, "pre_cmds")
         self.cmds: list[str] = listify_element(pkg_info, "cmds")
 
-    @override
     def __str__(self):
         return stringify(vars(self))
 
@@ -376,7 +372,6 @@ class PackageCompleter(NestedCompleter):
     def add_pkg_list(self, entry: str, list_cmd: str):
         self.packages[entry] = list_cmd
 
-    @override
     def get_completions(self, document: Document, complete_event: CompleteEvent):
         yield from super().get_completions(document, complete_event)
 
@@ -388,7 +383,7 @@ class PackageCompleter(NestedCompleter):
                     yield from cmp.get_completions(document, complete_event)
 
 
-def listify_element(ele_dict: pkg_t, name: str) -> list[str]:
+def listify_element(ele_dict: dict[str, str], name: str) -> list[str]:
     """Returns list version of a specific entry"""
     entry: list[str]|str = ele_dict.get(name, [])
     return [entry] if isinstance(entry, str) else entry
