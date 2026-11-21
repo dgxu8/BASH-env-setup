@@ -6,7 +6,7 @@ local plugins = {
         lazy = true,
         dependencies = {{"nvim-mini/mini.icons", version = false}},
     },
---    {"folke/neodev.nvim", opts = {}},
+    {"folke/neodev.nvim", opts = {}},
     {"numToStr/Comment.nvim", config = true, keys = {{"g", mode = {"n", "x"}}}},
 }
 

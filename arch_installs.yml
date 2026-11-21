@@ -42,8 +42,9 @@ basic_pacman:
   poppler: poppler
   jq: jq
   wl_clipboard: wl-clipboard
+  moor: moor
   batcat:
-    __rdepends__: bat_syntaxes
+    __rdepends__: [bat_syntaxes, moor]
     name: bat
   delta: git-delta
   lazygit:
@@ -93,6 +94,13 @@ gh_releases:
 
 basic_custom:
   _check_fmt: "which {name}"
+
+  base:
+    _check_fmt: null
+    __depends__: [batcat, eza, fzf, lazygit, atuin, gitprompt, tmux, tio, yazi, vim]
+    name: base
+    description: System Base Dependencies, RDEPENDS on everying we need
+    cmds: "echo 'finished install everything'"
 
   rust:
     name: cargo

@@ -233,6 +233,7 @@ function y() {
 	rm -f -- "$tmp"
 }
 
+export PAGER="moor"
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 export MANROFFOPT="-c"
 

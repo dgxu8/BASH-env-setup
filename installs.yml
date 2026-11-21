@@ -111,7 +111,7 @@ gh_debian_releases:
   _install_fmt: "sudo dpkg -i {pkg_name}"
   _check_fmt: "which {name}"
   batcat:
-    __rdepends__: bat_syntaxes
+    __rdepends__: [bat_syntaxes, moor]
     dir: *tmp_dir
     name: bat
     description: Improved cat
@@ -186,6 +186,23 @@ gh_debian_releases:
       - cd shellcheck-*/
       - cp shellcheck ~/.local/bin/
 
+  ov:
+    dir: *tmp_dir
+    name: ov
+    description: Feature-rich terminal pager ov
+    repo: noborus/ov
+    glob: ov_*_amd64.deb
+
+  moor:
+    _install_fmt: "mv {pkg_name} moor"
+    dir: *tmp_dir
+    name: moor
+    description: Moor is a pager. It reads and displays UTF-8 encoded text from files or pipes.
+    repo: walles/moor
+    glob: moor-*-linux-amd64
+    cmds:
+      - sudo install moor /usr/local/bin
+
 gh_releases:
   _pull_from_gh: true  # Will automatically fill {pkg_name}, need to provide {repo} and {glob}
   _check_fmt: "which {name}"
@@ -202,6 +219,13 @@ gh_releases:
 
 basic_custom:
   _check_fmt: "which {name}"
+
+  base:
+    _check_fmt: null
+    __depends__: [batcat, eza, fzf, lazygit, atuin, gitprompt, tmux, tio, yazi, vim]
+    name: base
+    description: System Base Dependencies, RDEPENDS on everying we need
+    cmds: "echo 'finished install everything'"
 
   rust:
     name: cargo
