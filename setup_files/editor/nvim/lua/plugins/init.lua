@@ -6,7 +6,6 @@ local plugins = {
         lazy = true,
         dependencies = {{"nvim-mini/mini.icons", version = false}},
     },
-    {"kergoth/vim-bitbake"},
 --    {"folke/neodev.nvim", opts = {}},
     {"numToStr/Comment.nvim", config = true, keys = {{"g", mode = {"n", "x"}}}},
 }

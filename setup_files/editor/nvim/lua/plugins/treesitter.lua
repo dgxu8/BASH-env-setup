@@ -6,7 +6,8 @@ local setup = function()
         "c", "cpp", "lua", "rust", "python",
         "yaml", "cmake", "vim", "vimdoc",
         "markdown", "markdown_inline", "rst",
-        "udev", "xml", "html"
+        "udev", "xml", "html", "svelte", "css",
+        "javascript", "jinja"
     }
     require("nvim-treesitter").install(langs)
 

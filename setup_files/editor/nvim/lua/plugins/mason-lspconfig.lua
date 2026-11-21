@@ -5,6 +5,8 @@ local lsp_list = {
     "lua_ls",
     "marksman",
     "rust_analyzer",
+    "ts_ls",
+    "svelte",
 }
 local plugin = {
     "mason-org/mason-lspconfig.nvim",
@@ -24,7 +26,17 @@ vim.lsp.config('clangd', {
     cmd = {"clangd", "--function-arg-placeholders=0", "--offset-encoding=utf-16"},
 })
 
--- vim.lsp.config('basedpyright', { })
+vim.lsp.config('basedpyright', {
+    settings = {
+        analysis = {
+            typeCheckingMode = "standard",
+        }
+    }
+})
+
+vim.lsp.config("svelte", {
+    root_markers = {"svelte.config.js", "package.json", ".git"},
+})
 
 vim.lsp.config('lua_ls', {
     settings = {
